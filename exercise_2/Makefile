@@ -4,7 +4,7 @@
 #          Christoph Klein
 #          Günther Schindler
 #
-CC = gcc
+CC = mpicc
 CFLAGS = -Wall
 TEXC = pdflatex
 DOCUNAME = docu_2

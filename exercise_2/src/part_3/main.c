@@ -16,6 +16,7 @@
  ********************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
+#include <mpi.h>
 #include "matrix_multiply.h"
 #include "time_measurement.h"
 
@@ -23,6 +24,9 @@ int main(int argc, char* argv[]){
   int iSize=2048;
   sMatrix sMa, sMb, sMRes;
   double dStartTime=0.0, dElapsedTime=0.0;
+  
+  /* Initialize MPI */
+  MPI_Init(&argc, &argv);
   
   /* Allocate memory for matrizen */
   if(vAllocMatrix(&sMa, iSize, iSize))
@@ -49,5 +53,6 @@ int main(int argc, char* argv[]){
   vFreeMatrix(&sMb);
   vFreeMatrix(&sMRes);
   
+  MPI_Finalize();
   return EXIT_SUCCESS;
 }
