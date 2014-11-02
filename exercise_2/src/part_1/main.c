@@ -1,10 +1,28 @@
+/*********************************************************************************
+ * FILENAME         main.c
+ * 
+ * DESCRIPTION      These functions are part of the submission to exercises of 
+ *                  the "Introduction to High Percformance Computing" (Intro HPC) 
+ *                  lecture of the University of Heidelberg.
+ * 
+ *                  Exercise 1 - MPI Ring Communication
+ *                               
+ * 
+ * AUTHORS          Klaus Naumann
+ *                  Christoph Klein
+ *                  Günther Schindler
+ *
+ * LAST CHANGE      2. NOV 2014
+ * 
+ ********************************************************************************/
+
 #include <mpi.h>
 #include <stdio.h>
 #include <unistd.h>
 
 int main (int argc, char **argv) {
 
-    int size, rank, m = 150, signal = 666,i;
+    int size, rank, m = 3000, signal = 666,i;
     double starttime, endtime;
     char hostname[50];
     MPI_Status status;
@@ -29,7 +47,7 @@ int main (int argc, char **argv) {
         double dt = endtime - starttime;
         double N = m*size;
         double average = dt/N;
-        printf( "%f %f\n", dt, average);
+        printf( "%.10f %.10f\n", dt, average);
     }
     else if (size > 1) { // at least two processes
         int source = rank - 1;

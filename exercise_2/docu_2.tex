@@ -8,6 +8,7 @@
 \usepackage{lastpage} % Required to determine the last page for the footer
 \usepackage{extramarks} % Required for headers and footers
 \usepackage[usenames,dvipsnames]{color} % Required for custom colors
+\usepackage{pgf} % Required to insert pgf plots from matplotlib
 \usepackage{graphicx} % Required to insert images
 \usepackage{listings} % Required for insertion of code
 \usepackage{courier} % Required for the courier font
@@ -171,16 +172,87 @@
 % To have just one problem per page, simply put a \clearpage after each problem
 
 \begin{homeworkProblem}[MPI Ring Communication]
-So kann man Quellcode integrieren:
+
 \begin{lstlisting}{c}
 
-for(i=0; i<7; i++)
-{
-  printf("Hello World!");
-}
+#include <mpi.h>
+#include <stdio.h>
+#include <unistd.h>
 
-\end{lstlisting}
+int main (int argc, char **argv) {
 
+    int size, rank, m = 3000, signal = 666,i;
+    double starttime, endtime;
+    char hostname[50];
+    MPI_Status status;
+
+    MPI_Init (&argc, &argv);
+
+    MPI_Comm_rank( MPI_COMM_WORLD, &rank);
+    MPI_Comm_size( MPI_COMM_WORLD, &size);
+
+    gethostname( hostname, 50);
+
+
+    if (rank == 0 && size > 1) { /*at least two processes*/
+        starttime = MPI_Wtime();
+        for (i=0; i<m; i++) { /*main process sends the first m messages*/
+            MPI_Send( &signal, 1, MPI_INT, 1, 0, MPI_COMM_WORLD); 
+        }
+        for (i=0; i<m; i++) { // main process waits for the last m messages
+            MPI_Recv ( &signal, 1, MPI_INT, size-1, 0, MPI_COMM_WORLD, &status);
+        }
+        endtime = MPI_Wtime();
+        double dt = endtime - starttime;
+        double N = m*size;
+        double average = dt/N;
+        printf( "%f %f\n", dt, average);
+    }
+    else if (size > 1) { // at least two processes
+        int source = rank - 1;
+        for (i=0; i<m; i++) { // side processes wait for m messages
+            MPI_Recv ( &signal, 1, MPI_INT, source, 0, MPI_COMM_WORLD, &status);
+        }
+   
+
+        int destination = (rank + 1) % size;
+        for (i=0; i<m; i++) { // side processes send m messages
+            MPI_Send( &signal, 1, MPI_INT, destination, 0, MPI_COMM_WORLD);
+        }
+    }
+    else printf ("No communication with only one process.");
+
+    MPI_Finalize();
+    return 0;
+
+}\end{lstlisting}
+
+\begin{figure}
+    \begin{center}
+        \input{./src/part_1/plot.pgf}
+    \end{center}
+    \caption{For every number of processes the total communication time was measured ten times.
+        One point in the graph represents the average of the ten measurements. The average
+        time per message was not measured in a direct way, rather it was calculated
+        out of the total time. Every process sent 3000 messages to another process.}
+\end{figure}    
+\subsection*{Minimize average time per message for 12 processes}
+If you test explicit this program, you achieve smallest average times per message for all
+processes on one node. Due to the small amount of calculations the program's time
+intensive parts are made up of communication between the processes. Therefore
+the program is slower if it has to communicate via Ethernet. But if you think about a
+more calculation intensive program, which has to make a ring communication it is
+sensible to assign one process to one core. This means for the computers creek01-08, which
+have octa cores, eight processes per computer. That means in case with 12 processes you should
+assign the first 8 to one node and the last 4 to the next computing node.
+In the measurements we got the times:
+\begin{center}
+\begin{tabular}{ll}
+& average time per message [$\mu$s] \\
+12 processes on one node & $\approx 1.5$ \\
+8 processes and 4 processes on node & $\approx 4.5$ \\
+\end{tabular}
+\end{center}
 \end{homeworkProblem}
 \clearpage
 %----------------------------------------------------------------------------------------
