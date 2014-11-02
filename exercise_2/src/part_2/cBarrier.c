@@ -14,23 +14,32 @@
  * LAST CHANGE      02. NOV 2014
  * 
  ********************************************************************************/
+#include <stdio.h>
+#include <stdlib.h>
+#include "mpi.h"
 #include "cBarrier.h"
 
 void cBarrier(int *rank, int *size, int *do_)
 {
-  	int i;
-	
-	if(*rank == 0) {
-		MPI_Send(1, 1, MPI_INT, *size - 1, 1, MPI_COMM_WORLD); 
+  	int i, finish = 1;
+	printf("do_ : %d\n", *do_);
+
+	if(*rank != *(size) - 1) {
+		MPI_Send(&finish, 1, MPI_INT, *(size) - 1, 1, MPI_COMM_WORLD); 
 	}
-	else if(*rank == *size - 1) {
-		for(i = 0; i < *size - 1; i++)
-			MPI_Recv(1, 1, MPI_INIT, i, root, MPI_COMM_WORLD, NULL);
+	
+	if(*rank == *(size) - 1) {
+		for(i = 0; i < *(size) - 1; i++)
+			MPI_Recv(&finish, 1, MPI_INT, i, 1, MPI_COMM_WORLD, NULL);
+	}
+	
+	if(*rank == *(size) - 1) {
 		*do_ = !*do_;
 	}
-	
-	MPI_Bcast(do_, 1, MPI_INIT, *size - 1, MPI_COMM_WORLD);
 
+	MPI_Bcast(do_, 1, MPI_INT, *(size) - 1, MPI_COMM_WORLD);
+	printf("do_ : %d\n", *do_);
 	while(!*do_);
-	*do_ = !*do_
+	printf("do_ : %d\n", *do_);
+	*do_ = !*do_;
 }
