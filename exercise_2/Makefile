@@ -17,7 +17,7 @@ matrixmultiply :
 
 barrier_synch :
 	$(CC) $(CFLAGS)	src/part_2/barrier_synch.c \
-			-o matrixmultiply
+			-o barrier_synch
 
 docu :
 	$(TEXC) $(DOCUNAME).tex
