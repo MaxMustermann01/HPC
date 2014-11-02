@@ -15,9 +15,15 @@ matrixmultiply :
 			src/part_3/time_measurement.c \
 			-o matrixmultiply
 
+barrier_synch :
+	$(CC) $(CFLAGS)	src/part_2/barrier_synch.c \
+			-o matrixmultiply
+
 docu :
 	$(TEXC) $(DOCUNAME).tex
 
 clean :
 	rm -f 	matrixmultiply \
+		$(DOCUNAME).aux $(DOCUNAME).log $(DOCUNAME).pdf $(DOCUNAME).toc
+	rm -f   barrier_synch \
 		$(DOCUNAME).aux $(DOCUNAME).log $(DOCUNAME).pdf $(DOCUNAME).toc
