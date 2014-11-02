@@ -30,3 +30,4 @@ clean :
 		$(DOCUNAME).aux $(DOCUNAME).log $(DOCUNAME).pdf $(DOCUNAME).toc
 	rm -f   barrier_synch \
 		$(DOCUNAME).aux $(DOCUNAME).log $(DOCUNAME).pdf $(DOCUNAME).toc
+	rm -f   ring_communication

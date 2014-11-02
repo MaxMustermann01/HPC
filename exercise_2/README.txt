@@ -18,6 +18,9 @@ For barrier_synch
 
 For the matrix multiply
   $ make matrixmultiply
+
+For MPI ring communication
+  $ make ring_communication 
   
 For the latex documentation
   $ make approximatepi
