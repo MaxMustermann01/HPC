@@ -1,11 +1,12 @@
 #include <stdio.h>
-#include "mpi.h"
 #include <stdlib.h>
+#include "mpi.h"
+#include "cBarrier.h"
 
 int main(int argc, char **argv) {
 
 	int i, rank, size;
-	int iterations = atoi(argv(1)];
+	int iterations = atoi(argv[1]);
 	double t1, t2, t;
 
 	
@@ -21,7 +22,7 @@ int main(int argc, char **argv) {
 		t += (time2 - time1);
 		printf("Process No. %d reached barrier.", rank);
 	}
-	printf("Average barrier latency: %f\n", time/NUM_BARRIERS);
+	printf("Average barrier latency: %f\n", time/iterations);
 	MPI_Finalize();
 	return 0;
 }
