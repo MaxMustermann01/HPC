@@ -25,11 +25,13 @@ void barrier(int *rank, int *size) {
 
 		if (*(rank) == 0) {
 
+			// root sends message to processes [1 ... *(size) - 1]
 			for(i = 1; i < *(size); i++) {
 				MPI_Send(&signal, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
 				printf("%d: sent message to Process No. : %d\n", *(rank), i);
 			}
-
+			
+			// root receives message from processes [1 ... *(size) - 1]
 			for(i = 1; i < *(size); i++) {
 				MPI_Recv(&signal, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
 				printf("%d: received message from Process No. : %d\n", *(rank), i);
@@ -37,9 +39,11 @@ void barrier(int *rank, int *size) {
 		
 		} 
 		else {
+			// Process *(rank) receives message from root (rank 0)
 			MPI_Recv(&signal, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
 			printf("%d: received message from Process No. : %d\n", *(rank), status.MPI_SOURCE);			
 
+			// Process *(rank) sends back message to root (rank 0)
 			MPI_Send(&signal, 1, MPI_INT, status.MPI_SOURCE, 0, MPI_COMM_WORLD);
 			printf("%d: sent message to Process No. : %d\n", *(rank), status.MPI_SOURCE);			
 		}
@@ -55,17 +59,15 @@ int main(int argc, char **argv) {
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 	
-	starttime = MPI_Wtime();
 	for(i = 0; i < iterations; i++) {
+		starttime = MPI_Wtime();		
 		barrier(&rank, &size);
-		//MPI_Barrier();
+		endtime = MPI_Wtime();
+		t += (endtime - starttime);
 	}
 
-	endtime = MPI_Wtime();
-	t = endtime - starttime;
-	printf("Time elapsed: %f\n", t/iterations);
-
 	MPI_Finalize();			// Deinitialisation of MPI
-	
+	printf("Time elapsed per iteration: %f\n", t/iterations);
+	printf("Time elapsed: %f\n", t);
 	return 0;
 }
