@@ -12,31 +12,71 @@
  *                  Christoph Klein
  *                  Günther Schindler
  *
- * LAST CHANGE      29. OKT 2014
+ * LAST CHANGE      03. Nov 2014
  * 
  ********************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include "matrix_multiply.h"
 
-void vMatrixMultiply(sMatrix *pMa, sMatrix *pMb, sMatrix *pMRes)
+int iMatrixMultiply(sMatrix *pMa, sMatrix *pMb, sMatrix *pMRes)
 {
   int i,j,k;
   /* 
    * In order to multiply 2 matrices, one must have the same amount of rows that the 
    * other has columns.
    */
-  if(pMa->iRow == pMb->iCol)
+  if(pMa->iRow == pMb->iCol && pMa->iRow == pMRes->iRow && pMb->iRow == pMRes->iCol)
   {
     for(i=0; i<pMa->iRow; i++)
     {
       for(j=0; j<pMb->iCol; j++)
       {
-	pMRes->ppaMat[i][j] = 0.0;
         for(k=0; k<pMa->iCol; k++)
 	  pMRes->ppaMat[i][j] += pMa->ppaMat[i][k] * pMb->ppaMat[k][j];
-      }  
+      }
     }
+    return 0;
+  }
+  else
+  {
+    printf("DEBUG: Problem with the size of a matrix");
+    return 1;
+  }
+}
+
+int iTilledMatrixMultiply(sMatrix *pMa, sMatrix *pMb, sMatrix *pMRes, int iBlockSize)
+{
+  int i,j,k, ii, jj, kk;
+  /* 
+   * In order to multiply 2 matrices, one must have the same amount of rows that the 
+   * other has columns.
+   */
+  if(pMa->iRow == pMb->iCol && pMa->iRow == pMRes->iRow && pMb->iRow == pMRes->iCol)
+  {
+    for(ii=0; ii<pMa->iRow; ii+=iBlockSize)
+    {
+      for(jj=0; jj<pMb->iCol; jj+=iBlockSize)
+      {
+        for(kk=0; kk<pMa->iCol; kk+=iBlockSize)
+	{
+	  for(i=ii; i<ii+iBlockSize; i++)
+          {
+            for(j=jj; j<jj+iBlockSize; j++)
+            {
+              for(k=kk; k<kk+iBlockSize; k++)
+	        pMRes->ppaMat[i][j] += pMa->ppaMat[i][k] * pMb->ppaMat[k][j];
+            }
+          } 
+	}
+      }
+    }
+    return 0;
+  }
+  else
+  {
+    printf("DEBUG: Problem with the size of a matrix");
+    return 1;
   }
 }
 

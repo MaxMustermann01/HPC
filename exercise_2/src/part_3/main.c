@@ -11,12 +11,11 @@
  *                  Christoph Klein
  *                  Günther Schindler
  *
- * LAST CHANGE      29. OKT 2014
+ * LAST CHANGE      03. Nov 2014
  * 
  ********************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
-#include <mpi.h>
 #include "matrix_multiply.h"
 #include "time_measurement.h"
 
@@ -24,11 +23,8 @@ int main(int argc, char* argv[]){
   int iSize=2048;
   sMatrix sMa, sMb, sMRes;
   double dStartTime=0.0, dElapsedTime=0.0;
-  
-  /* Initialize MPI */
-  MPI_Init(&argc, &argv);
-  
-  /* Allocate memory for matrizen */
+ 
+  /* Allocate memory for matrices */
   if(vAllocMatrix(&sMa, iSize, iSize))
     exit(1);
   if(vAllocMatrix(&sMb, iSize, iSize))
@@ -42,17 +38,23 @@ int main(int argc, char* argv[]){
   
   /* Start time measurement */
   dStartTime = dstartMeasurement();
-  /* Start multiplication */
-  vMatrixMultiply(&sMa, &sMb, &sMRes);
+  /* Start multiplication, non-optimized */
+  //iMatrixMultiply(&sMa, &sMb, &sMRes);
   /* Stop time-measurement*/
   dElapsedTime = dstopMeasurement(dStartTime);
-  
-  printf("\n Time for calculation: %lfs\n", dElapsedTime);
+  printf("\n Time for calculation "
+         "\n non-Optimized:  %lfs", dElapsedTime);
+  /* Start time measurement, blocked */
+  dStartTime = dstartMeasurement();
+  /* Start multiplication */
+  iTilledMatrixMultiply(&sMa, &sMb, &sMRes, 32);
+  /* Stop time-measurement*/
+  dElapsedTime = dstopMeasurement(dStartTime);
+  printf("\n blocked:  %lfs\n", dElapsedTime);
   
   vFreeMatrix(&sMa);
   vFreeMatrix(&sMb);
   vFreeMatrix(&sMRes);
   
-  MPI_Finalize();
   return EXIT_SUCCESS;
 }
