@@ -14,65 +14,57 @@
  * LAST CHANGE      02. NOV 2014
  * 
  ********************************************************************************/
+#include <mpi.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "mpi.h"
 
-void cBarrier( int *rank, int *size, int *counter ) {
-	int i, signal = 1;
-	int numprocs = *(size) - 1;
-	
-	if( *rank != numprocs ){
-		MPI_Send( &signal, 1, MPI_INT, numprocs, 1 , MPI_COMM_WORLD );
-	} else if( *rank == numprocs ){
-		for( i=0 ; i < numprocs; i++ ) {
-			MPI_Recv( &signal, 1 ,MPI_INT, i, 1, MPI_COMM_WORLD, NULL );
+void barrier(int *rank, int *size) {
+	int i;
+	int signal = 1;
+	MPI_Status status;
+
+		if (*(rank) == 0) {
+
+			for(i = 1; i < *(size); i++) {
+				MPI_Send(&signal, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
+				printf("%d: sent message to Process No. : %d\n", *(rank), i);
+			}
+
+			for(i = 1; i < *(size); i++) {
+				MPI_Recv(&signal, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
+				printf("%d: received message from Process No. : %d\n", *(rank), i);
+			}
+		
+		} 
+		else {
+			MPI_Recv(&signal, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+			printf("%d: received message from Process No. : %d\n", *(rank), status.MPI_SOURCE);			
+
+			MPI_Send(&signal, 1, MPI_INT, status.MPI_SOURCE, 0, MPI_COMM_WORLD);
+			printf("%d: sent message to Process No. : %d\n", *(rank), status.MPI_SOURCE);			
 		}
-		*counter = !*counter;
-	}
-
-	MPI_Bcast(counter, 1, MPI_INT, numprocs, MPI_COMM_WORLD);
-
-	while(!*counter);
-	*counter = !*counter;
 }
 
 int main(int argc, char **argv) {
-	int rank, size, i;
-	double t, t1, t2;
+	int i, size, rank;
+	double t, starttime, endtime;
 	int iterations = atoi(argv[1]);
-	int counter = 0;
+
+	MPI_Init(&argc,&argv);		// Initialisation of MPI
 	
-	MPI_Init(&argc, &argv);
-
-	MPI_Comm_size( MPI_COMM_WORLD, &size );
-	MPI_Comm_rank( MPI_COMM_WORLD, &rank );
-
-	//printf("Start test for built-in barrier:\n");
-	for( i=0; i<iterations; i++ ){
-		t1 = MPI_Wtime();
-		MPI_Barrier(MPI_COMM_WORLD);
-		t2 = MPI_Wtime();
-		t += (t2 - t1);
-		//printf("Process No. %d reached barrier No.: %d\n", rank, i+1);
-	}
-	printf("Average built-in barrier latency for process No. %d is %f (%d Process total)\n", rank, t/iterations, size);
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+	MPI_Comm_size(MPI_COMM_WORLD, &size);
 	
-	t = 0;
-
-	//printf("Start test for cBarrier:\n");
-	for( i=0; i<iterations; i++ ){
-		t1 = MPI_Wtime();
-		//MPI_Barrier(MPI_COMM_WORLD);
-		cBarrier(&rank, &size, &counter);
-		t2 = MPI_Wtime();
-		t += (t2 - t1);
-		//printf("Process No. %d reached barrier No.: %d\n", rank, i+1);
+	starttime = MPI_Wtime();
+	for(i = 0; i < iterations; i++) {
+		barrier(&rank, &size);
 	}
 
-	printf("Average cBarrier latency for process No. %d is %f (%d Process total)\n", rank, t/iterations, size);
+	endtime = MPI_Wtime();
+	t = endtime - starttime;
+	printf("Time elapsed: %f\n", t/iterations);
 
-	MPI_Finalize();
+	MPI_Finalize();			// Deinitialisation of MPI
+	
 	return 0;
 }
-
