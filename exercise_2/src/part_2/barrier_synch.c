@@ -58,6 +58,7 @@ int main(int argc, char **argv) {
 	starttime = MPI_Wtime();
 	for(i = 0; i < iterations; i++) {
 		barrier(&rank, &size);
+		//MPI_Barrier();
 	}
 
 	endtime = MPI_Wtime();
