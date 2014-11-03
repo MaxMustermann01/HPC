@@ -39,7 +39,7 @@ int main(int argc, char* argv[]){
   /* Start time measurement */
   dStartTime = dstartMeasurement();
   /* Start multiplication, non-optimized */
-  //iMatrixMultiply(&sMa, &sMb, &sMRes);
+  iMatrixMultiply(&sMa, &sMb, &sMRes);
   /* Stop time-measurement*/
   dElapsedTime = dstopMeasurement(dStartTime);
   printf("\n Time for calculation "
@@ -50,7 +50,7 @@ int main(int argc, char* argv[]){
   iTilledMatrixMultiply(&sMa, &sMb, &sMRes, 32);
   /* Stop time-measurement*/
   dElapsedTime = dstopMeasurement(dStartTime);
-  printf("\n blocked:  %lfs\n", dElapsedTime);
+  printf("\n blocked      :  %lfs\n", dElapsedTime);
   
   vFreeMatrix(&sMa);
   vFreeMatrix(&sMb);

@@ -10,7 +10,7 @@ TEXC = pdflatex
 DOCUNAME = docu_2
 
 matrixmultiply :
-	$(CC) $(CFLAGS)	src/part_3/main.c \
+	gcc $(CFLAGS)	src/part_3/main.c \
 			src/part_3/matrix_multiply.c \
 			src/part_3/time_measurement.c \
 			-o matrixmultiply
