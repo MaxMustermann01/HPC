@@ -19,6 +19,9 @@ barrier_synch :
 	$(CC) $(CFLAGS)	src/part_2/barrier_synch.c \
 			-o barrier_synch
 
+ring_communication:
+	$(CC) $(CFLAGS) src/part_1/main.c -o ring_communication
+
 docu :
 	$(TEXC) $(DOCUNAME).tex
 
@@ -27,3 +30,4 @@ clean :
 		$(DOCUNAME).aux $(DOCUNAME).log $(DOCUNAME).pdf $(DOCUNAME).toc
 	rm -f   barrier_synch \
 		$(DOCUNAME).aux $(DOCUNAME).log $(DOCUNAME).pdf $(DOCUNAME).toc
+	rm -f   ring_communication
