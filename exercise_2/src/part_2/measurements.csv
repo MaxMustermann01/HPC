@@ -1,6 +1,3 @@
-Processes,"Barrier() 
-[sec/iteration]","MPI_Barrier()
-[sec/iteration]"
 2,0.000025,0.000003
 4,0.000059,0.000006
 6,0.000108,0.000012

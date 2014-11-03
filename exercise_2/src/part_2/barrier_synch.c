@@ -60,7 +60,8 @@ int main(int argc, char **argv) {
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 	
 	for(i = 0; i < iterations; i++) {
-		starttime = MPI_Wtime();		
+		starttime = MPI_Wtime();
+		//MPI_Barrier(MPI_COMM_WORLD);		
 		barrier(&rank, &size);
 		endtime = MPI_Wtime();
 		t += (endtime - starttime);

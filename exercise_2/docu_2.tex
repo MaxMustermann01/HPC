@@ -307,7 +307,8 @@ int main(int argc, char **argv) {
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 	
 	for(i = 0; i < iterations; i++) {
-		starttime = MPI_Wtime();		
+		starttime = MPI_Wtime();
+		//MPI_Barrier(MPI_COMM_WORLD);		
 		barrier(&rank, &size);
 		endtime = MPI_Wtime();
 		t += (endtime - starttime);
@@ -320,6 +321,15 @@ int main(int argc, char **argv) {
 }
 }\end{lstlisting}
 
+\begin{figure}
+    \begin{center}
+        \input{./src/part_2/central_barrier.png}
+    \end{center}
+    \caption{Comparison between built-in MPI_Barrier() and the implemented centralized Barrier(). The measured time is the average time needed for a process to reach the barrier for one iteration. Both barriers where tested for 2 up to 24 process in parallel and 100 iterations to achieve stable results.}
+\end{figure}    
+\subsection*{Comparison between built-in MPI_Barrier() and centralized barrier Barrier()}
+The amount of time needed for a process to reach the barrier increases with increasing number of parallel processes. As you can see in the chart the gap between MPI_Barrier() and the implemented centralized Barrier() gets bigger with rising amount of involved processes. For 24 processes MPI_Barrier() performs 300 percent better than the centralized Barrier().
+\begin{center}
 
 \end{homeworkProblem}
 \clearpage
