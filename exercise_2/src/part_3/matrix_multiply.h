@@ -26,14 +26,27 @@ typedef struct sMatrix
 } sMatrix;
 
 /* 
- * DESCRIPTION - Multiply a matrix by a vector. Matrix A must have the same amount of
- *               rows that the B has columns.
+ * DESCRIPTION - Naive matrix-matrix multiplication. Matrix A must have the same 
+ *               amount of rows that the B has columns.
  * PARAMETER   - sMatrix *: pointer to matrix A which should be multiplied
  *               sMatrix *: pointer to matrix B which should be multiplied
  *               sMatrix *: pointer to matrix in which the result will be stored
- * RETURN      - void
+ * RETURN      - 0 if multiplication was ok
+ *               1 if not
  */
-void vMatrixMultiply(sMatrix *, sMatrix *, sMatrix *);
+int iMatrixMultiply(sMatrix *, sMatrix *, sMatrix *);
+
+/* 
+ * DESCRIPTION - Tilled (blocking) matrix-matrix multiplication. Matrix A must have 
+ *               the same amount of rows that the B has columns.
+ * PARAMETER   - sMatrix *: pointer to matrix A which should be multiplied
+ *               sMatrix *: pointer to matrix B which should be multiplied
+ *               sMatrix *: pointer to matrix in which the result will be stored
+ *               int : Block size
+ * RETURN      - 0 if multiplication was ok
+ *               1 if not
+ */
+int iTilledMatrixMultiply(sMatrix *, sMatrix *, sMatrix *, int);
 
 /*
  * DESCRIPTION - Allocate memory for a double-precision floating point matrix
