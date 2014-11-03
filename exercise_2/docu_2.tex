@@ -319,17 +319,24 @@ int main(int argc, char **argv) {
 	printf("Time elapsed: %f\n", t);
 	return 0;
 }
-}\end{lstlisting}
+}
+\end{lstlisting}
 
 \begin{figure}
     \begin{center}
-        \input{./src/part_2/central_barrier.png}
+        %\input{./src/part_2/centralbarrier.png}
+        \includegraphics[width=1\columnwidth]{centralbarrier}
     \end{center}
-    \caption{Comparison between built-in MPI_Barrier() and the implemented centralized Barrier(). The measured time is the average time needed for a process to reach the barrier for one iteration. Both barriers where tested for 2 up to 24 process in parallel and 100 iterations to achieve stable results.}
+    \caption{Comparison between built-in MPI\_Barrier() and the implemented centralized Barrier(). 
+    The measured time is the average time needed for a process to reach the barrier for one iteration. 
+    Both barriers where tested for 2 up to 24 process in parallel and 100 iterations to achieve stable results.}
 \end{figure}    
-\subsection*{Comparison between built-in MPI_Barrier() and centralized barrier Barrier()}
-The amount of time needed for a process to reach the barrier increases with increasing number of parallel processes. As you can see in the chart the gap between MPI_Barrier() and the implemented centralized Barrier() gets bigger with rising amount of involved processes. For 24 processes MPI_Barrier() performs 300 percent better than the centralized Barrier().
-\begin{center}
+\subsection{Comparison between built-in MPI\_Barrier() and centralized barrier\ Barrier()}
+The amount of time needed for a process to reach the barrier increases with increasing 
+number of parallel processes. As you can see in the chart the gap between MPI\_Barrier() 
+and the implemented centralized Barrier() gets bigger with rising amount of involved processes. 
+For 24 processes MPI\_Barrier() performs 300 percent better than the centralized Barrier().
+%\begin{center}
 
 \end{homeworkProblem}
 \clearpage
@@ -337,6 +344,206 @@ The amount of time needed for a process to reach the barrier increases with incr
 %	Matrix multiply - sequential version
 %----------------------------------------------------------------------------------------
 \begin{homeworkProblem}[Matrix multiply - sequential version]
+\subsection{Non-optimized Matrix}
+As part of the second assignment in Intro HPC we have to implement a sequential,
+non-opitmized, version of the matrix multiply. This implementation should multiply
+two double precision floating point matrices. The matrices should be initialized by
+random values. In addition, we have to measure the execution time for the operation.
+\\ \\
+For all operations with matrices, we introduced the structure sMatrix. This structure
+contains one integer for rows, one integer for coloumns and a pointer to the address
+of the matrix itself.
+\begin{lstlisting}{c}
+typedef struct sMatrix
+{
+  int iRow;          // for rows
+  int iCol;          // for columns
+  double** ppaMat;   // double[][]
+} sMatrix;
+\end{lstlisting}
+To allocate memory, we implemented the function vAllocMatrix().
+\begin{lstlisting}{c}
+int vAllocMatrix(sMatrix *pM, int iRow, int iCol)
+{ 
+  int i=0, iRet=0;
+  /* Init rows and cols in matrix structure */
+  pM->iCol=iCol;
+  pM->iRow=iRow;
+  /* Alloc Mem for Rows-Pointer */
+  pM->ppaMat = malloc(iRow * sizeof(double *));
+  if(NULL == pM->ppaMat)
+    iRet=1;
+  /* Allocate Memory for Rows */
+  for(i=0; i < iRow; i++)
+  {
+    pM->ppaMat[i] = malloc(iCol * sizeof(double *));
+    if(NULL == pM->ppaMat[i])
+      iRet=1;
+  }
+  return iRet;
+}
+\end{lstlisting}
+The function vFreeMatrix() will free the allocated memory again.
+\begin{lstlisting}{c}
+void vFreeMatrix(sMatrix *pM)
+{
+  int i;
+  /* free the Rows */
+  for(i=0; i<pM->iRow; i++)
+    free(pM->ppaMat[i]);
+  /* free cols */
+  free(pM->ppaMat);
+}
+\end{lstlisting}
+The function vInitMatrix() initializes the matrix elements with random numbers, based
+on the commited seed value.
+\begin{lstlisting}{c}
+void vInitMatrix(sMatrix *pM, int iSeed)
+{
+  int i,j;
+  /* Initializes random number generator */
+  srand((unsigned) iSeed);
+  /* Fill the matrix-elements with random numbers */
+  /* matrix[zeile][spalte] */
+  for(i=0; i<pM->iRow; i++)
+  {
+    for(j=0; j<pM->iCol; j++)
+      /* Generate numbers fronm 0 to 50 */
+      pM->ppaMat[i][j]=(double)rand();
+  }
+}
+\end{lstlisting}
+The function vMatrixMultiply() multiplies two matrices (based on a naive algorithm).
+\begin{lstlisting}{c}
+void vMatrixMultiply(sMatrix *pMa, sMatrix *pMb, sMatrix *pMRes)
+{
+  int i,j,k;
+  /* 
+   * In order to multiply 2 matrices, one must have the same amount of rows that the 
+   * other has columns.
+   */
+  if(pMa->iRow == pMb->iCol)
+  {
+    for(i=0; i<pMa->iRow; i++)
+    {
+      for(j=0; j<pMb->iCol; j++)
+      {
+        for(k=0; k<pMa->iCol; k++)
+	  pMRes->ppaMat[i][j] += pMa->ppaMat[i][k] * pMb->ppaMat[k][j];
+      }  
+    }
+  }
+}
+\end{lstlisting}
+In order to measure the time we use the functions dstartMeasurement() and
+dstopMeasurement().
+\begin{lstlisting}{c}
+/* Start time-measurement */
+double dstartMeasurement(void)
+{
+  struct timeval tim;
+  gettimeofday(&tim, NULL);
+  return tim.tv_sec+(tim.tv_usec/1000000.0);
+}
+/* Stop time-measurement */
+double dstopMeasurement(double dStartTime)
+{
+  struct timeval tim;
+  gettimeofday(&tim, NULL);
+  return (tim.tv_sec+(tim.tv_usec/1000000.0)) - dStartTime;
+}
+\end{lstlisting}
+\subsection{Execution time}
+The implemented program should be executed on one idle node of the creek servers.
+\\ \\
+The time measurement resulted in a value of ${\mathcal (t \approx 146.87s)}$.
+\\The GFLOP/s (Giga Floating Point Operations Per Second) get calculated by the sum 
+of floating point operations divided by the elapsed time. In order to determine the 
+number of floating point operations we take a look at the algorithm.
+\begin{lstlisting}{c}
+if(pMa->iRow == pMb->iCol)
+{
+  for(i=0; i<pMa->iRow; i++)
+  {
+    for(j=0; j<pMb->iCol; j++)
+    {
+      for(k=0; k<pMa->iCol; k++)
+        pMRes->ppaMat[i][j] += pMa->ppaMat[i][k] * pMb->ppaMat[k][j];
+    }  
+  }
+}
+\end{lstlisting}
+The number of operations to be due to the single loop iterations:
+\\${\mathcal O (i*j*k)}$ \\
+For quadratic matrices ${\mathcal (i=j=k)}$ we get a cubic order:
+\\${\mathcal O (n^3)}$. \\
+For each loop iteration we get two floating point operations. This results:
+\\${\mathcal (2*(2048^3)) = 1.717986918*10^{10} \approx 17.18 GFLOP}$ \\
+And for the spezific time measurement we get:
+\\${\mathcal (17.18GFLOP / 146.87s) \approx 116.97 MFLOP/s}$ .
+\subsection{Gap between achieved and theoretical GFLOP/s}
+The theoretical peak performance for the Intel Xeon E5-1620 CPU, used in the creek-Server,
+is (according to Intels datasheet: http://download.intel.com/support/processors/xeon/sb/xeon\_E5-1600.pdf)
+115.2 GFLOP/s. The huge gap between the theoretical and the achieved GFLOP/s is due to
+size of the matrices. The matrices are too big to be handled in the Cash, thus they need
+to be moved to the RAM. At this, the slowless to access the RAM and the slowless
+of the RAM itself (compared to the Cash) is the bottleneck in this system.
+\subsection{Optimized matrix multiplication}
+In order to overcome the locality problem of this program, we use a technique to
+improve the Cache performance. This technique is called cache blocking, or cache
+tiling. Here, matrices that are too big to fit in the cache are broken up into smaller
+pieces that will fit in the cache. Following algorithm shows our blocking matrix-multiplication.
+\begin{lstlisting}{c}
+int iTilledMatrixMultiply(sMatrix *pMa, sMatrix *pMb, sMatrix *pMRes, int iBlockSize)
+{
+int i,j,k, ii, jj, kk;
+  for(ii=0; ii<pMa->iRow; ii+=iBlockSize)
+  {
+    for(jj=0; jj<pMb->iCol; jj+=iBlockSize)
+    {
+      for(kk=0; kk<pMa->iCol; kk+=iBlockSize)
+      {
+        for(i=ii; i<ii+iBlockSize; i++)
+        {
+          for(j=jj; j<jj+iBlockSize; j++)
+          {
+            for(k=kk; k<kk+iBlockSize; k++)
+            pMRes->ppaMat[i][j] += pMa->ppaMat[i][k] * pMb->ppaMat[k][j];
+          }
+        } 
+      }
+    }
+  }
+ return 0;
+}
+\end{lstlisting}
+The block size (iBlockSize) is a very important part in this implementatio. The bigger
+the blocks are, the greater the reduction in memory traffic. But only up to a point.
+Three blocks must be able to fit into cache at the same time. In our case, the cache
+is able to store 10 MB. Each matrix element is double precision (8 Byte). So we can
+calculate the theoretical optimized block size by:
+\\$\sqrt[2]{10 MB / 3 / 8 B} \approx 645$ .
+\\For our algorithm we need a number based on the power of two. The next smallest is in
+this case 512. So, 512 is theoretical the best block size for the matrix-multiply on
+this system.
+\\In reality the time measurements lead to a different result. Here we get the best
+result by a block size of 16.
+\\For the block size of 16 we achieve 323.23 GFLOP/s.
+\\
+\\\\
+\begin{tabular}{|c|c|}\hline
+   Block Size & Time in Sec \\ \hline
+   4 & 55.06 \\ \hline
+   8 &  65.74 \\ \hline
+   16 & 53.15 \\ \hline
+   32 & 54.76 \\ \hline
+   64 & 55.06 \\ \hline
+   128 & 56.47 \\ \hline
+   256 & 65.06 \\ \hline
+   512 & 72.76 \\ \hline
+   1024 & 85.46 \\ \hline
+   2048 & 146.53 \\ \hline
+\end{tabular}
 
 \end{homeworkProblem}
 \clearpage
