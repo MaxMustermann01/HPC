@@ -8,11 +8,11 @@ CC = mpicc
 CPP = mpic++
 CFLAGS = -Wall
 TEXC = pdflatex
-DOCUNAME = docu_2
+DOCUNAME = docu_3
 
 measure_latency:
 	$(CPP) $(CFLAGS)	src/part_3/measure_latency.cpp \
-			-o matrixmultiply
+			-o measure_latency
 
 docu :
 	$(TEXC) $(DOCUNAME).tex
