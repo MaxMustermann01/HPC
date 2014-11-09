@@ -172,7 +172,31 @@
 % To have just one problem per page, simply put a \clearpage after each problem
 
 \begin{homeworkProblem}[Moores Law]
-
+\subsection{Apply Moore's Law}
+As part of the third exercise we should apply Moore's Law to the currently fastest
+supercomputer worldwide and predict the achievement of one Exaflop.
+\\
+According to the list of june 2014 published on www.top500.org the currently fastest
+supercomputer worldwide is Tianhe-2, a supercomputer developed by China's National
+University of Defense Technology. It has a performance of 33.86 Pflop/s on the
+Linpack benchmark.
+\\
+In the mid 1960s Gordon Moore made the observation that computer power, measured by the 
+number of transistors that could be fit onto a chip, doubled once every 18 months. This
+law can be stated in mathematical terms as
+\\\\
+$K_{(t)} = K_{0} \cdot 2^{t/T_{2}}$ ,
+\\\\
+where K is the computer power at the reference year t and $T_{2}$ (= 18 months) is time 
+for duplication. After reorganizing we get
+\\\\
+t = $\frac{T_{2} \cdot ln(K_{(t)} / K_{0})}{ln(2)}$ .
+\\\\
+Based on the 33.86 Pflop/s of Tianhe-2 we predict
+\\\\
+$\Delta t = \frac{18 \cdot ln(1000 / 33.86)}{ln(2)} \approx 87.91 Month \approx 7.33 Years $
+\\\\
+to exceed the Exaflop performance (2021).
 %\begin{lstlisting}{c}
 %\end{lstlisting}
 
