@@ -4,7 +4,7 @@ reset
 # epslatex
 set terminal png #size 10.4cm,6.35cm color colortext standalone 'phv,9' \
 #header '\definecolor{t}{rgb}{0.5,0.5,0.5}'
-set output 'half_roundtrip.png'
+set output 'measure_latency.png'
 
 # define axis
 # remove border on top and right and set color to gray
@@ -22,17 +22,21 @@ set datafile separator ";"
 #set key bottom right
 
 #set format '\color{t}$%g$'
-set xlabel 'time [sec]'
+set title 'Measure Latency'
+set xlabel 'time [s]'
 set ylabel 'message size [kB]'
 #set xrange auto
 set logscale x 
 #set logscale y
 set xtics (1,2,4,8,16,32,64,128,256,512,1024)
-set yrange [0.:0.08]
+set yrange [0.:0.15]
 
 set ylabel 'time [sec]'
 set xlabel 'message size [kB]'
 
-plot 'half_roundtrip_final.dat' u 1:2 t 'one node' w lp ls 1, \
-     ''                  u 1:3 t 'two nodes' w lp ls 2
+plot 'full_roundtrip_final.dat' u 1:2 t 'one node (full rt)' w lp ls 1, \
+     ''                  u 1:3 t 'two nodes (full rt)' w lp ls 2, \
+     'half_roundtrip_final.dat' u 1:2 t 'one node (half rt)' w lp ls 3, \
+     ''                  u 1:3 t 'two nodes (half rt)' w lp ls 4
+
 
