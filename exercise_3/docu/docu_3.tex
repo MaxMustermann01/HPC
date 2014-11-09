@@ -225,7 +225,7 @@ Possibility 2: \\
 \begin{equation}
 Speedup = \frac{1}{(1 - 0.5) + \frac{0.5}{1.6}} = \frac{1}{0.5 + 0.3125} = 1.2308
 \end{equation}
-As one can see possibility 2 results in an higher speedup and is therefor the optimal solution. \\ \\
+As one can see possibility 2 results in an higher speedup and is therefore the optimal solution. \\ \\
 \textbf{Part 3:} \\
 \begin{equation}
 Speedup = \frac{1}{(1 - P) + \frac{P}{N}}
@@ -332,10 +332,13 @@ int main(int argc, char** argv)
 \end{lstlisting}
 \subsection{}
 \begin{figure}   
-        \includegraphics[scale=0.9]{measure_latency.png}
-    \caption{}
+        \includegraphics[scale=1.0]{measure_latency.png}
+    \caption{Full and Half round-trip latency depending on message sizes from 1 kB to 1024 kB and whether the program is executed on one (with two processes) or two nodes}
 \end{figure} 
-
+\subsection{}
+As shown in the diagramm \textit{Measure Latency} on the next page both the half round-trip and the full round-trip on two nodes requires more time than both measurements on one node with two processes. The gap between both measurements gets higher with rising message size. A reason for this is a higher intra-node bandwidth compared to two nodes connected through a network. So the sending / receiving time ascends with bigger messages. \\ \\
+The latency for the intra-node ping-pong test is about 14 times faster than for the inter-node version for 1024 kB. 
+Because of the fact that latency increases for inter-node message parsing it is of primary importance to design algorithms which are efficient and can bridge this latency gap to achieve a high performance.
 \end{homeworkProblem}
 \clearpage
 %----------------------------------------------------------------------------------------
