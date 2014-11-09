@@ -197,9 +197,26 @@ Based on the 33.86 Pflop/s of Tianhe-2 we predict
 $\Delta t = \frac{18 \cdot ln(1000 / 33.86)}{ln(2)} \approx 87.91 Month \approx 7.33 Years $
 \\\\
 to exceed the Exaflop performance (2021).
-%\begin{lstlisting}{c}
-%\end{lstlisting}
 
+\subsection{Determine Growth Rate}
+Further, we should determine the growth rate of the TOP500 list by using the fastest system
+from November 2007 and November 2011. According to this growth rate we should predict the 
+exceeding of one Exaflop by a supercomputer.
+\\
+The fastest supercomputer worldwide was at November 2007 the BlueGene/L System (478.2 Tflop/s)
+and at November 2011 the K Computer (10 Pflop/s).
+\\
+We determine the Compound Annual Growth Rate by
+\\\\
+$CAGR(2007,20011) = (\frac{10 \cdot 10^{15}}{428.2 \cdot 10^{12}})^{\frac{1}{2011-2007}} - 1 \approx 1.20$ .
+\\\\
+So, the calculated growth rate is 120\% per year. We can now predict the exceeding of one
+Exaflop, based on the value of 2011, by
+\\\\
+$\Delta t = \frac{ln(10^{18}/10^{16})}{ln(1.1 + 1)} \approx 6.2 Years$ .
+\\\\
+According to the growth rate of the TOP500 list (Nov. 2007 and Nov. 2011), a supercomputer
+will exceed one Exaflop in the year 2017.
 \end{homeworkProblem}
 \clearpage
 %----------------------------------------------------------------------------------------
