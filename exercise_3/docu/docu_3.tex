@@ -361,7 +361,26 @@ Because of the fact that latency increases for inter-node message parsing it is 
 %	Measure Bandwidth
 %----------------------------------------------------------------------------------------
 \begin{homeworkProblem}[Measure Bandwidth]
+Figure \ref{fig:bandwidth} shows the measured bandwidths for different package sizes.
+You can see the bandwidth measured between two processes on one and two computing
+nodes with blocking and non-blocking MPI send commands. You can see that the
+bandwidth for non-blocking send increasis linearly, whereas the blocking send
+reaches one maximum performance and breaks down for high package sizes.
+Furthermore the increase in bandwidth of blocking send for one node
+at about $2\cdot10^{5}$ [Bytes] is earlier as the analog step of the blocking send
+for two computing nodes, due to the transfer process via network. The peaks at the non-blocking send
+commands might represent MPI packaging processing. At the peaks the package size might be
+big enough that MPI must put parts of the data into a new sending block.
+At low package sizes we can see startup influences at the measured bandwidths.
 
+\begin{figure}
+    \begin{center}
+        \input{../src/part_4/plot.pgf}
+    \end{center}
+    \caption{Bandwidth for blocking and non-blocking MPI send commands with
+        processes on one and two computing nodes.}
+    \label{fig:bandwidth}
+\end{figure}
 \end{homeworkProblem}
 \clearpage
 \end{document}
