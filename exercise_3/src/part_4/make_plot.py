@@ -60,6 +60,6 @@ for i in range(4):
     ax.plot(lPacketSizes, arrBandwidth, label=lLabels[i])
 
 ## plot manipulation ##
-ax.legend(loc=3,bbox_to_anchor=(0.,1.02,1.,.102), ncol=2, mode="expand", borderaxespad=0.)
+ax.legend(loc=3,bbox_to_anchor=(0.,1.02,1.,.102), ncol=1, mode="expand", borderaxespad=0.)
 fig.savefig("plot.pgf")
 
