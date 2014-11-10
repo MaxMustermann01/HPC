@@ -15,7 +15,7 @@ measure_latency:
 			-o measure_latency
 
 flood_test:
-	$(CC)  $(CFLAGS)	src/part_4/main.c \
+	$(CC)  $(CFLAGS)	src/part_4/main.c src/part_4/flood_test.h src/part_4/flood_test.c \
 			-o flood_test
 
 docu :
