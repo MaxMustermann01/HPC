@@ -79,6 +79,12 @@ int main(int argc, char* argv[]){
     
       MPI_Send(&matrixpart, 1, MPI_INT, dest, 1, MPI_COMM_WORLD);
       MPI_Send(&rows, 1, MPI_INT, dest, 1, MPI_COMM_WORLD);
+      /* 
+      * Christoph:
+      * TO FIX: the following command will only send one row.
+      *         as &sMb[matrixpart][0] is a pointer with access to
+      *         one row.
+      */
       MPI_Send(&sMa[matrixpart][0], rows*iSize, MPI_DOUBLE, dest, 1, MPI_COMM_WORLD);
       MPI_Send(&sMb, iSize*iSize, MPI_DOUBLE, dest, 1, MPI_COMM_WORLD);
       matrixpart += rows;
