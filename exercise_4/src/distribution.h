@@ -128,6 +128,9 @@ void vDivideLeaf(sTree*);
 * PARAMETER   - integer: job count
 *             - sJobList*: the sJobList* Object for allocation
 * RETURN      - integer: 1 allocation failed. 0 allocation successful 
+* USE         - sJobList myJobList;
+*               int jobCount = 10; // e.g.
+*               vAllocateJobList(jobCount, &myJobList);
 */
 int vAllocateJobList(int, sJobList*);
 

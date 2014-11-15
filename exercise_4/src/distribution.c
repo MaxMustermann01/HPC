@@ -18,9 +18,11 @@
 #include "distribution.h"
 #include <stdlib.h>
 #include <stdio.h>
+#define _DEBUG_ 0
 
 void vDistributeOutputMatrix( int iRows, int iCols, sJobList *pJobList) {
 
+    if (_DEBUG_) printf("vDistributeOutputMatrix: entered\n");
     int iJobCount = pJobList->iTotalJobs;
     /* initialize tree */
     sTree *pTree;
@@ -29,6 +31,7 @@ void vDistributeOutputMatrix( int iRows, int iCols, sJobList *pJobList) {
     if (pTree == NULL)
         exit(EXIT_FAILURE);
 
+    if (_DEBUG_) printf("vDistributeOutputMatrix: pTree allocated\n");
     /* set maximum height of the tree */
     pTree->iHeight = iTreeHeight(iJobCount); 
 
@@ -45,6 +48,7 @@ void vDistributeOutputMatrix( int iRows, int iCols, sJobList *pJobList) {
     if (pTree->ppElement == NULL)
         exit(EXIT_FAILURE);
 
+    if (_DEBUG_) printf("vDistributeOutputMatrix: ppElement allocated\n");
     /* initialization of the elements */
     int i;
     for (i = 0; i < pTree->iTreeSize; i++) {
@@ -58,6 +62,7 @@ void vDistributeOutputMatrix( int iRows, int iCols, sJobList *pJobList) {
         pTree->ppElement[i]->iEmpty = 1;
     }
     
+    if (_DEBUG_) printf("vDistributeOutputMatrix: ppElement[i] allocated\n");
     /* mark first element */
     pTree->ppElement[0]->iEmpty = 0;
     pTree->ppElement[0]->iRowBegin = 0;
@@ -65,14 +70,17 @@ void vDistributeOutputMatrix( int iRows, int iCols, sJobList *pJobList) {
     pTree->ppElement[0]->iColBegin = 0;
     pTree->ppElement[0]->iColEnd = iCols;
 
+    if (_DEBUG_) printf("vDistributeOutputMatrix: assigned first node\n");
     /* add nodes to the tree until #leafs == #iJobCount */
     while (iCountLeafs(pTree) != iJobCount) {
         vDivideLeaf(pTree);
     }
+    if (_DEBUG_) printf("vDistributeOutputMatrix: %d nodes added\n", iCountLeafs(pTree));
 
     /* transform the tree structure to useful Job structure */
     vLeafs2Jobs(pTree, pJobList);
     
+    if (_DEBUG_) printf("vDistributeOutputMatrix: vLeafs2Jobs done\n");
     /* free allocated memory */
     for (i = 0; i < pTree->iTreeSize; i++) {
         free(pTree->ppElement[i]);
@@ -195,6 +203,7 @@ void vLeafs2Jobs(sTree *pTree, sJobList *pJobList) {
     int iEmp;
     int iChild;
     int iSize = pTree->iTreeSize;
+    if (_DEBUG_) printf("vLeafs2Jobs: iTreeSize = %d\n",iSize);
     int iJobNr = 0;
 
     for (i = 0; i < iSize; i++) {
@@ -204,17 +213,22 @@ void vLeafs2Jobs(sTree *pTree, sJobList *pJobList) {
         /* is leaf if the children index is outside the tree's size */
         if (iChild >= iSize) {
             /* get job properties from leaf */
+           if (_DEBUG_) printf("vLeafs2Jobs: try to change pJobList->ppJob[%d](iChild>Size),i = %d\n",iJobNr,i);
             pJobList->ppJob[iJobNr]->iJob = iJobNr;
+           if (_DEBUG_) printf("vLeafs2Jobs: try to access pTree (iChild>Size)\n");
             pJobList->ppJob[iJobNr]->iRowBegin = pTree->ppElement[i]->iRowBegin;
             pJobList->ppJob[iJobNr]->iRowEnd = pTree->ppElement[i]->iRowEnd;
             pJobList->ppJob[iJobNr]->iColBegin = pTree->ppElement[i]->iColBegin;
             pJobList->ppJob[iJobNr]->iColEnd = pTree->ppElement[i]->iColEnd;
+            if (_DEBUG_) printf("vLeafs2Jobs: accessed pTree and pJobList (iChild>Size)\n");
             iJobNr++; // increase job id
         }
             
         else if (iChild < iSize) {
+            if (_DEBUG_) printf("vLeafs2Jobs: else if statement\n");
             /* is leaf when the children are empty */
-            if (pTree->ppElement[iChild]->iEmpty)
+            if (pTree->ppElement[iChild]->iEmpty) {
+                if (_DEBUG_) printf("vLeafs2Jobs: child in else if statement\n");
                 /* get job properties from leaf */
                 pJobList->ppJob[iJobNr]->iJob = iJobNr;
                 pJobList->ppJob[iJobNr]->iRowBegin = pTree->ppElement[i]->iRowBegin;
@@ -222,6 +236,7 @@ void vLeafs2Jobs(sTree *pTree, sJobList *pJobList) {
                 pJobList->ppJob[iJobNr]->iColBegin = pTree->ppElement[i]->iColBegin;
                 pJobList->ppJob[iJobNr]->iColEnd = pTree->ppElement[i]->iColEnd;
                 iJobNr++; //increase job id
+            }
         }
     }
 }
@@ -229,12 +244,12 @@ void vLeafs2Jobs(sTree *pTree, sJobList *pJobList) {
 int vAllocateJobList(int iJobNr, sJobList *pJobList) {
 
     int i;
-    printf("Entered function: allocate Job list\n");
-
+    if (_DEBUG_) printf("vAllocateJobList: entered\n");
     /* allocate pointer to job pointers */
     pJobList->ppJob = (sJob **) malloc(iJobNr * sizeof(sJob **));
     if (pJobList->ppJob == NULL) return 1;
 
+    if (_DEBUG_) printf("vAllocateJobList: ppJob allocated\n");
     for (i = 0; i < iJobNr; i++) {
         
         /* allocate job pointer */ 
@@ -242,7 +257,9 @@ int vAllocateJobList(int iJobNr, sJobList *pJobList) {
         if (pJobList->ppJob[i] == NULL) return 1;
     }
 
+    if (_DEBUG_) printf("vAllocateJobList: ppJob[i] allocated\n");
     pJobList->iTotalJobs = iJobNr;
+    if (_DEBUG_) printf("vAllocateJobList: complete\n");
     return 0;
 }
 
@@ -253,5 +270,4 @@ void vFreeJobList(sJobList *pJobList) {
         free(pJobList->ppJob[i]);
     }
     free(pJobList->ppJob);
-    free(pJobList);
 }

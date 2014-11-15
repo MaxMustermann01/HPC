@@ -26,10 +26,11 @@ void test_vDistributeOutputMatrix() {
     char strAllocErr[] = "Allocation Error";
     char strNULL[] = " ";
     int failed = 0;
-/*
- *  1x1 Matrix
- *  1 Job
- */
+
+    /*
+     *  1x1 Matrix
+     *  1 Job
+     */
     sJobList jobList;
     
     if (vAllocateJobList(1, &jobList)) {
@@ -38,22 +39,57 @@ void test_vDistributeOutputMatrix() {
         exit(EXIT_FAILURE);
     }
 
-    printf("Try to access jobList->iTotalJobs\n");
-    printf("TESTS.C: jobList.iTotalJobs = %d\n",jobList.iTotalJobs);
-    printf("sizeof(sJobList) = %u\n",sizeof(sJobList));
-    printf("sizeof(sJobList*) = %u\n",sizeof(sJobList*));
     vDistributeOutputMatrix(1,1,&jobList);
 
     if (jobList.iTotalJobs != 1) {
         failed = 1;
-        vPrintError(strFunc, strNULL);
+        char report1[] = "1x1 Matrix with 1 Job failed (total jobs)";
+        vPrintError(strFunc, report1);
     }
+    if (jobList.ppJob[0]->iRowBegin != 0) {
+        failed = 1;
+        char report1[] = "1x1 Matrix with 1 Job failed (row begin)";
+        vPrintError(strFunc, report1);
+    }
+    if (jobList.ppJob[0]->iRowEnd != 1) {
+        failed = 1;
+        char report1[] = "1x1 Matrix with 1 Job failed (row end)";
+        vPrintError(strFunc, report1);
+    }
+    if (jobList.ppJob[0]->iColBegin != 0) {
+        failed = 1;
+        char report1[] = "1x1 Matrix with 1 Job failed (col begin)";
+        vPrintError(strFunc, report1);
+    }
+    if (jobList.ppJob[0]->iColEnd != 1) {
+        failed = 1;
+        char report1[] = "1x1 Matrix with 1 Job failed (col end)";
+        vPrintError(strFunc, report1);
+    }
+    vFreeJobList(&jobList);
+
+    /*
+     *  3x3 Matrix
+     *  2 Jobs
+     */
+    sJobList jobList2;
+
+    if (vAllocateJobList(2, &jobList2)) {
+        vPrintError(strFunc, strAllocErr);
+        failed = 1;
+        exit(EXIT_FAILURE);
+    }
+
+    vDistributeOutputMatrix(3,3,&jobList2);
+
+
+    /* if everything worked */
     if (!failed) vPrintChecked(strFunc);
 }
 
 
 void vPrintError(char *strFuncName, char *strMsg) {
-   printf("***\n***ERROR: function '%s'\n ***\t%s\n ***\n", strFuncName, strMsg); 
+   printf("***\n***ERROR: function '%s'\n***\t%s\n***\n", strFuncName, strMsg); 
 }
 
 void vPrintChecked(char *strFuncName) {
