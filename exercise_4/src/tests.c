@@ -30,20 +30,24 @@ void test_vDistributeOutputMatrix() {
  *  1x1 Matrix
  *  1 Job
  */
-    sJobList *pJobList;
-
-    if (vAllocateJobList(1, pJobList)) {
+    sJobList jobList;
+    
+    if (vAllocateJobList(1, &jobList)) {
         vPrintError(strFunc, strAllocErr);
         failed = 1;
         exit(EXIT_FAILURE);
     }
 
-    vDistributeOutputMatrix(1,1,pJobList);
+    printf("Try to access jobList->iTotalJobs\n");
+    printf("TESTS.C: jobList.iTotalJobs = %d\n",jobList.iTotalJobs);
+    printf("sizeof(sJobList) = %u\n",sizeof(sJobList));
+    printf("sizeof(sJobList*) = %u\n",sizeof(sJobList*));
+    vDistributeOutputMatrix(1,1,&jobList);
 
-    if (pJobList->iTotalJobs != 1)
+    if (jobList.iTotalJobs != 1) {
         failed = 1;
         vPrintError(strFunc, strNULL);
-    
+    }
     if (!failed) vPrintChecked(strFunc);
 }
 

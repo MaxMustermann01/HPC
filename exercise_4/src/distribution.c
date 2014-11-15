@@ -22,14 +22,13 @@
 void vDistributeOutputMatrix( int iRows, int iCols, sJobList *pJobList) {
 
     int iJobCount = pJobList->iTotalJobs;
-
     /* initialize tree */
     sTree *pTree;
 
     pTree = (sTree *) malloc(sizeof(sTree*)); 
     if (pTree == NULL)
         exit(EXIT_FAILURE);
-  
+
     /* set maximum height of the tree */
     pTree->iHeight = iTreeHeight(iJobCount); 
 
@@ -38,6 +37,7 @@ void vDistributeOutputMatrix( int iRows, int iCols, sJobList *pJobList) {
     * with height H is equal to 2^(H+1) - 1
     * This is realized by bitwise shift operator.
     */
+
     pTree->iTreeSize = (1 << (pTree->iHeight + 1)) - 1;
 
     /* allocation for the elements */
@@ -229,9 +229,7 @@ void vLeafs2Jobs(sTree *pTree, sJobList *pJobList) {
 int vAllocateJobList(int iJobNr, sJobList *pJobList) {
 
     int i;
-    /* allocate pointer to list struct */
-    pJobList = (sJobList *) malloc(sizeof(sJobList *));
-    if (pJobList == NULL) return 1;
+    printf("Entered function: allocate Job list\n");
 
     /* allocate pointer to job pointers */
     pJobList->ppJob = (sJob **) malloc(iJobNr * sizeof(sJob **));
@@ -244,6 +242,7 @@ int vAllocateJobList(int iJobNr, sJobList *pJobList) {
         if (pJobList->ppJob[i] == NULL) return 1;
     }
 
+    pJobList->iTotalJobs = iJobNr;
     return 0;
 }
 

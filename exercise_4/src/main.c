@@ -22,7 +22,8 @@
 
 int main (int argc, char *argv[]) {
 
-    bool optRunTests = chCommandLineGetBool("-t", argc, argv);
+    printf("WERDE AUSGEFuert\n");
+    int optRunTests = chCommandLineGetBool("t", argc, argv);
     if (optRunTests) {
         printf("***RUNNING TESTS\n");
         test_vDistributeOutputMatrix();
