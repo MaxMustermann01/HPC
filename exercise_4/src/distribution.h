@@ -78,13 +78,14 @@ typedef struct sJobList {
 *               in the next step the right big part is divided
 *               into two new fields.
 *               
-* PARAMETER   - integer: certain number
-*             - integer: #rows 
+* PARAMETER   - integer: #rows 
 *             - integer: #columns
-*             - sJobList*: output written here
+*             - sJobList*: must contain information about
+*               how many jobs you want to have. Output
+*               is written here.
 * RETURN      - void
 */
-vDistributeOutputMatrix(int, int, int, sJobList*);
+void vDistributeOutputMatrix(int, int, sJobList*);
 
 /*
 * DESCRIPTION - counts the needed tree height for
@@ -101,7 +102,7 @@ int iTreeHeight(int);
 *             - sJobList*: output written here
 * RETURN      - void
 */
-vLeafs2Jobs(sTree*, sJobList*);
+void vLeafs2Jobs(sTree*, sJobList*);
 
 /*
 * DESCRIPTION - count the leafs of a tree
@@ -120,4 +121,20 @@ int iCountLeafs(sTree*);
 * RETURN      - void
 */
 void vDivideLeaf(sTree*);
+
+/*
+* DESCRIPTION - Allocates the memory for a JobList with 
+*               a number of jobs.
+* PARAMETER   - integer: job count
+*             - sJobList*: the sJobList* Object for allocation
+* RETURN      - integer: 1 allocation failed. 0 allocation successful 
+*/
+int vAllocateJobList(int, sJobList*);
+
+/*
+* DESCRIPTION - Free the memory of a JobList
+* PARAMETER   - sJobList*: the Job List
+* RETURN      - void
+*/
+void vFreeJobList(sJobList*);
  #endif
