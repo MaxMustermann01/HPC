@@ -6,13 +6,13 @@
 #
 CC = mpicc
 CPP = mpic++
-CFLAGS = -Wall
+CFLAGS = 
 TEXC = pdflatex
 DOCUNAME = docu_3
 
 .PHONY: mat_mult
 mat_mult:
-	$(CPP) $(CFLAGS) ./src/main.c ./src/distribution.c ./src/tests.c -o ./bin/mat_mult 
+	$(CPP) $(CFLAGS) ./src/main.c ./src/distribution.c ./src/tests.c ./src/parallel_matmult.c ./src/matrix_multiply.c -o ./bin/mat_mult 
 
 .PHONY: docu
 docu :
