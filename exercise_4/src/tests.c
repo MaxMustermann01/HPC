@@ -11,7 +11,7 @@
  *                  Christoph Klein
  *                  Günther Schindler
  *
- * LAST CHANGE      14. NOV 2014
+ * LAST CHANGE      16. NOV 2014
  *
  ********************************************************************************/
 

@@ -160,3 +160,16 @@ void vRecvResFromProc(sMatrix *pMatC, int mpiSource, sJob *pJob) {
         MPI_Recv(pMatC->ppaMat[i], iColJ, MPI_INT, mpiSource, mpiTag++, MPI_COMM_WORLD, &mpiStatus);
     }
 }
+
+void vDoJob(sMatrix *pMa, sMatrix *pMb, sMatrix *pMc, sJob *pJob) {
+    
+    for (int i = pJob->iRowBegin; i < pJob->iRowEnd; i++) {
+        for (int j = pJob->iColBegin; j < pJob->iColEnd; j++) {
+            int sum = 0;
+            for (int k = 0; k < pMa->iCol; k++) {
+                sum += pMa->ppaMat[i][k] * pMb->ppaMat[k][j];
+            }
+            pMc->ppaMat[i][j] = sum;
+        }
+    }
+}

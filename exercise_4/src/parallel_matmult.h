@@ -67,4 +67,20 @@ void vSendResToProc(sMatrix*, int);
 * RETURN      - void
 */
 void vRecvResFromProc(sMatrix*, int, sJob*);
+
+/*
+* DESCRIPTION - you want to calculate only a part of
+*               of A * B = C, but you have the 
+*               whole matrices? Then this is the right
+*               function for you. Which part should be
+*               calculated must be written in the Job
+*               parameter.
+* PARAMETER   - sMatrix*: Matrix A
+*             - sMatrix*: Matrix B
+*             - sMatrix*: Matrix C (output written here)
+*             - sJob*: the job
+* RETURN      - void
+*/
+void vDoJob(sMatrix*, sMatrix*, sMatrix*, sJob*);
+
 #endif
