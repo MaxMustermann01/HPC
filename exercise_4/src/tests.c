@@ -82,6 +82,57 @@ void test_vDistributeOutputMatrix() {
 
     vDistributeOutputMatrix(3,3,&jobList2);
 
+    /* first job */
+    if (jobList2.iTotalJobs != 2) {
+        failed = 1;
+        char report1[] = "3x3 Matrix with 2 Jobs failed (total job count)";
+        vPrintError(strFunc, report1);
+    }
+    if (jobList2.ppJob[0]->iRowBegin != 0) {
+        failed = 1;
+        char report1[] = "3x3 Matrix with 2 Jobs failed (row begin)";
+        vPrintError(strFunc, report1);
+    }
+    if (jobList2.ppJob[0]->iRowEnd != 1) {
+        failed = 1;
+        char report1[] = "3x3 Matrix with 2 Jobs failed (row end job0)";
+        vPrintError(strFunc, report1);
+    }
+    if (jobList2.ppJob[0]->iColBegin != 0) {
+        failed = 1;
+        char report1[] = "3x3 Matrix with 2 Jobs failed (col begin)";
+        vPrintError(strFunc, report1);
+    }
+    if (jobList2.ppJob[0]->iColEnd != 3) {
+        failed = 1;
+        char report1[] = "3x3 Matrix with 2 Jobs failed (col end)";
+        vPrintError(strFunc, report1);
+    }
+
+    /* scond job */
+
+    if (jobList2.ppJob[1]->iRowBegin != 1) {
+        failed = 1;
+        char report1[] = "3x3 Matrix with 2 Jobs failed (row begin)";
+        vPrintError(strFunc, report1);
+    }
+    if (jobList2.ppJob[1]->iRowEnd != 3) {
+        failed = 1;
+        char report1[] = "3x3 Matrix with 2 Jobs failed (row end job1)";
+        vPrintError(strFunc, report1);
+    }
+    if (jobList2.ppJob[1]->iColBegin != 0) {
+        failed = 1;
+        char report1[] = "3x3 Matrix with 2 Jobs failed (col begin)";
+        vPrintError(strFunc, report1);
+    }
+    if (jobList2.ppJob[1]->iColEnd != 3) {
+        failed = 1;
+        char report1[] = "3x3 Matrix with 2 Jobs failed (col end)";
+        vPrintError(strFunc, report1);
+    }
+
+    vFreeJobList(&jobList2);
 
     /* if everything worked */
     if (!failed) vPrintChecked(strFunc);
