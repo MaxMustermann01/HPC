@@ -11,7 +11,7 @@
  *                  Christoph Klein
  *                  Günther Schindler
  *
- * LAST CHANGE      14. NOV 2014
+ * LAST CHANGE      16. NOV 2014
  *
  ********************************************************************************/
 
@@ -19,6 +19,7 @@
 #include "distribution.h"
 #include "chCommandLine.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <mpi.h>
 #include "parallel_matmult.h"
 
@@ -75,6 +76,25 @@ int main (int argc, char *argv[]) {
     }
 
 /******** START CALCULATIONS ********/
+    
+    if (mpiRank == 0) {
 
+        sMatrix sMa, sMb, sMc;
+        int iSize = optMatSize;
+        
+        /* allocate memory for matrices */
+        if(vAllocMatrix(&sMa, iSize, iSize))
+            exit(1);
+        if(vAllocMatrix(&sMb, iSize, iSize))
+            exit(1);
+        if(vAllocMatrix(&sMc, iSize, iSize))
+            exit(1);
+    
+        /* initialize matrix A & B */
+        vInitMatrixA(&sMa);
+        vInitMatrixB(&sMb);
+
+
+    }
     return 0;
 }
