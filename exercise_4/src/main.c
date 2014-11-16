@@ -26,10 +26,11 @@
 
 
 const static char DEFAULT_DISTRIBUTION = 't'; // 't' = tree or 'r' = row
-const static int DEFAULT_MAT_SIZE = 2000;
+const static int DEFAULT_MAT_SIZE = 10;
 const static bool DEFAULT_SENDING_MAIN = false;
 const static bool DEFAULT_VERIFY_RESULT = false;
 const static char DEFAULT_SENDING = 'n'; // 'n' = non-blocking or 'b' = blocking
+const static bool DEFAULT_PRINT_OUTPUT = true;
 
 int main (int argc, char *argv[]) {
 
@@ -80,7 +81,9 @@ int main (int argc, char *argv[]) {
     chCommandLineGet<int>(&optMatSize, "s", argc, argv);
     optMatSize = (optMatSize != 0) ? optMatSize : DEFAULT_MAT_SIZE;
 
-    
+    /* get output parameter */
+    bool optPrintMat = DEFAULT_PRINT_OUTPUT;
+    optPrintMat = chCommandLineGetBool("p", argc, argv);
 
 /******** START CALCULATIONS ********/
     
@@ -147,6 +150,10 @@ int main (int argc, char *argv[]) {
 
         /* stop time measurement */
         dEndTime = MPI_Wtime();
+
+        /* print output if wanted */
+        if (optPrintMat)
+            vPrintMatrix(&sMc);
         
         /* free allocated memory */
         vFreeJobList(&jobList);

@@ -1,0 +1,6 @@
+\contentsline {section}{Moores Law}{3}
+\contentsline {subsection}{Apply Moore's Law}{3}
+\contentsline {subsection}{Determine Growth Rate}{3}
+\contentsline {section}{Amdahl's Law}{4}
+\contentsline {section}{Measure Latency}{5}
+\contentsline {section}{Measure Bandwidth}{8}

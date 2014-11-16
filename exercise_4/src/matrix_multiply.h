@@ -22,7 +22,7 @@ typedef struct sMatrix
 {
   int iRow;          // for rows
   int iCol;          // for columns
-  double** ppaMat;   // double[][]
+  int** ppaMat;   // double[][]
 } sMatrix;
 
 /* 
@@ -70,14 +70,6 @@ void vFreeMatrix(sMatrix *);
  * RETURN      - void
  */
 void vPrintMatrix(sMatrix *);
-
-/*
- * DESCRIPTION - Initialize a matrix with random numbers.
- * PARAMETER   - sMatrix: pointer to matrix
- *               integer: for seed
- * RETRUN      - void
- */
-void vInitMatrix(sMatrix *, int);
 
 /*
  * DESCRIPTION - Initialize a matrix according to: A[i,j] = i + j

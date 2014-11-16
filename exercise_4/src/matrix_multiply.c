@@ -12,7 +12,7 @@
  *                  Christoph Klein
  *                  Günther Schindler
  *
- * LAST CHANGE      15. Nov 2014
+ * LAST CHANGE      16. Nov 2014
  * 
  ********************************************************************************/
 #include <stdio.h>
@@ -87,13 +87,13 @@ int vAllocMatrix(sMatrix *pM, int iRow, int iCol)
   pM->iCol=iCol;
   pM->iRow=iRow;
   /* Alloc Mem for Rows-Pointer */
-  pM->ppaMat = malloc(iRow * sizeof(double *));
+  pM->ppaMat =(int **) malloc(iRow * sizeof(int *));
   if(NULL == pM->ppaMat)
     iRet=1;
   /* Allocate Memory for Rows */
   for(i=0; i < iRow; i++)
   {
-    pM->ppaMat[i] = malloc(iCol * sizeof(double *));
+    pM->ppaMat[i] = (int *) malloc(iCol * sizeof(int *));
     if(NULL == pM->ppaMat[i])
       iRet=1;
   }
@@ -110,20 +110,6 @@ void vFreeMatrix(sMatrix *pM)
   free(pM->ppaMat);
 }
 
-void vInitMatrix(sMatrix *pM, int iSeed)
-{
-  int i,j;
-  /* Initializes random number generator */
-  srand((unsigned) iSeed);
-  /* Fill the matrix-elements with random numbers */
-  /* matrix[zeile][spalte] */
-  for(i=0; i<pM->iRow; i++)
-  {
-    for(j=0; j<pM->iCol; j++)
-      /* Generate numbers fronm 0 to 50 */
-      pM->ppaMat[i][j]=(double)rand();
-  }
-}
 
 void vInitMatrixA(sMatrix *pM) 
 {
@@ -161,7 +147,7 @@ void vPrintMatrix(sMatrix *pM)
   {
     printf("\n");
     for(j=0; j<pM->iCol; j++)
-      printf("%5.2lf", pM->ppaMat[i][j]);
+      printf("%d  ", pM->ppaMat[i][j]);
   }
   printf("\n");
 }

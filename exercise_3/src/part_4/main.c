@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
     char hostname[50];
 
     /* definition of variables */
-    blocking  = 1;
+    blocking  = 0;
     M         = 10;
     startsize = 200*sizeof(int);
     endsize   = 2e8*sizeof(int);
@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
     for (i=0; i<steps; i++)
         pTimes[i] = 0;
 
-   /* exponentially increasing packet sizes */
+   /* initialize exponentially increasing packet sizes */
     for (i=0; i<steps; i++) {
         pPacketSizes[i] = startsize * pow(n,i);
     }
