@@ -212,7 +212,7 @@ int main (int argc, char *argv[]) {
 
             dStartSeq = MPI_Wtime(); 
 
-            iTilledMatrixMultiply(&sMa, &sMb, &sMseq, 16);
+            iTilledMatrixMultiply(&sMa, &sMb, &sMseq, 32);
 
             dEndSeq = MPI_Wtime();
             dSeqTime = dEndSeq - dStartSeq;
@@ -241,9 +241,11 @@ int main (int argc, char *argv[]) {
         /*
         * per element in output matrix we have iSize
         * multiplications and iSize-1 additions
+	* NOTE: Günther: In this implementation we actually have iSize additions as well.
+	*                Look at the algorithm!
         */
-        double dGFLOPS = 1e-9*((double) (iSize*iSize*(iSize+iSize-1)))/dTime;
-
+        //double dGFLOPS = 1e-9*((double) (iSize*iSize*(iSize+iSize-1)))/dTime;
+        double dGFLOPS = 1e-9*((double) (iSize*iSize*(2*iSize)))/dTime;
         printf("Parallel matrix multiplication done with\n");
         printf("\tWorkers %d\n",iWorkers); 
         printf("\tProcesses %d\n",mpiSize);
