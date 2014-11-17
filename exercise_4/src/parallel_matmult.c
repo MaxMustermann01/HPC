@@ -26,19 +26,36 @@ void vSendJobToProc(sMatrix *pMatA, sMatrix *pMatB, sJob *pJob, int iDest, bool 
         printf("vSendJobToProc: got the following Job Nr %d\n",pJob->iJob);
         printf("\tpJob->iRowBegin = %d, pJob->iRowEnd = %d, pJob->iColBegin = %d, pJob->iColEnd = %d\n", pJob->iRowBegin, pJob->iRowEnd, pJob->iColBegin, pJob->iColEnd);
     }
-
+    /* 
+     * NOTE: Günther
+     * That code is using a C99 feature called designated initalizers.
+     * That feature isn't available in C++ (C++11) or mpi++.
+     * You should be more careful mixing C and C++ Code.
+     */
+//    sJob JobA = {
+//        .iJob      = 0,
+//        .iRowBegin = pJob->iRowBegin,
+//        .iRowEnd   = pJob->iRowEnd,
+//        .iColBegin = 0,
+//        .iColEnd   = pMatA->iCol};
+//    sJob JobB = {
+//        .iJob = 0,
+//        .iRowBegin = 0,
+//        .iRowEnd = pMatB->iRow,
+//        .iColBegin = pJob->iColBegin,
+//        .iColEnd = pJob->iColEnd};
     sJob JobA = {
-        .iJob      = 0,
-        .iRowBegin = pJob->iRowBegin,
-        .iRowEnd   = pJob->iRowEnd,
-        .iColBegin = 0,
-        .iColEnd   = pMatA->iCol};
+        0,
+        pJob->iRowBegin,
+        pJob->iRowEnd,
+        0,
+        pMatA->iCol};
     sJob JobB = {
-        .iJob = 0,
-        .iRowBegin = 0,
-        .iRowEnd = pMatB->iRow,
-        .iColBegin = pJob->iColBegin,
-        .iColEnd = pJob->iColEnd};
+        0,
+        0,
+        pMatB->iRow,
+        pJob->iColBegin,
+        pJob->iColEnd};
 
     int iRowA = JobA.iRowEnd - JobA.iRowBegin;
     int iColA =  JobA.iColEnd - JobA.iColBegin;
