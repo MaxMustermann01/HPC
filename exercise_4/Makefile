@@ -21,3 +21,4 @@ docu :
 .PHONY: clean
 clean:
 	rm -rf ./bin/*
+	rm -rf $(DOCUNAME).aux $(DOCUNAME).log $(DOCUNAME).toc $(DOCUNAME).pdf

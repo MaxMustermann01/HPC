@@ -193,6 +193,47 @@ generic.
 \end{homeworkProblem}
 \clearpage
 %----------------------------------------------------------------------------------------
+%	Code Comments
+%----------------------------------------------------------------------------------------
+\begin{homeworkProblem}[Code Overview]
+We solved all the tasks using one executable program. You can choose command line
+options to get the different wanted outputs. A help function callable via
+\texttt{-h} shows the available options. In the following you get a short overview
+of the source data, which you can find in the \texttt{/src/} directory.
+\begin{description}
+    \item[\texttt{main.c}]\hfill\\
+        Here the main work of the different processes is managed.
+        Furthermore the command line options are evaluated and
+        output is specified.
+    \item[\texttt{distribution.c/h}] \hfill\\
+        Here you can find the tree algorithm for the job distribution.
+        You see a schematically description of this algorithm in figure
+        \ref{fig:tree_sheme}. The algorithm always cuts the output
+        matrix' area into halves until the number of working processes
+        is reached.
+    \item[\texttt{matrix\_multiply.c/h}] \hfill\\
+        This are the functions used for exercise sheet II.
+    \item[\texttt{parallel\_matmult.c/h}] \hfill\\
+        This file contains the functions for communication and
+        synchronization between the different processes.
+        Jobs, which should be calculated, must be send to
+        other processes and recieved.
+    \item[\texttt{tests.c}] \hfill\\
+        Here you can find test functions for the program.
+\end{description}
+
+\begin{figure}
+    \begin{center}
+    \includegraphics[width=0.6\textwidth]{./docu/tree_sheme}
+    \end{center}
+    \caption{the tree algorithm for job distribution. You can see
+        the output matrix' area, which is divided into pieces, which
+        should be calculated by one process.}
+    \label{fig:tree_sheme}
+\end{figure}
+\end{homeworkProblem}
+\clearpage
+%----------------------------------------------------------------------------------------
 %	Matrix multiply – parallel version using MPI
 %----------------------------------------------------------------------------------------
 \begin{homeworkProblem}[Matrix multiply – parallel version using MPI]
