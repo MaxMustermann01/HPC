@@ -12,7 +12,7 @@
  *                  Christoph Klein
  *                  Günther Schindler
  *
- * LAST CHANGE      16. Nov 2014
+ * LAST CHANGE      17. Nov 2014
  * 
  ********************************************************************************/
 #include <stdio.h>
@@ -23,15 +23,16 @@ int iMatrixMultiply(sMatrix *pMa, sMatrix *pMb, sMatrix *pMRes)
 {
   int i,j,k;
   /* 
-   * In order to multiply 2 matrices, one must have the same amount of rows that the 
-   * other has columns.
+   * In order to multiply 2 matrices, the first must has the same amount
+   * of columns that the second one has of rows
    */
-  if(pMa->iRow == pMb->iCol && pMa->iRow == pMRes->iRow && pMb->iRow == pMRes->iCol)
+  if(pMa->iCol == pMb->iRow && pMa->iRow == pMRes->iRow && pMb->iCol == pMRes->iCol)
   {
     for(i=0; i<pMa->iRow; i++)
     {
       for(j=0; j<pMb->iCol; j++)
       {
+      pMRes->ppaMat[i][j] = 0;
         for(k=0; k<pMa->iCol; k++)
 	  pMRes->ppaMat[i][j] += pMa->ppaMat[i][k] * pMb->ppaMat[k][j];
       }
@@ -40,7 +41,7 @@ int iMatrixMultiply(sMatrix *pMa, sMatrix *pMb, sMatrix *pMRes)
   }
   else
   {
-    printf("DEBUG: Problem with the size of a matrix");
+    printf("iMatrixMultiply: No Multiplication − Matrix size not correct\n");
     return 1;
   }
 }

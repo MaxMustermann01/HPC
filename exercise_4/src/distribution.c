@@ -11,7 +11,7 @@
  *                  Christoph Klein
  *                  Günther Schindler
  *
- * LAST CHANGE      14. NOV 2014
+ * LAST CHANGE      17. NOV 2014
  *
  ********************************************************************************/
 
@@ -270,4 +270,12 @@ void vFreeJobList(sJobList *pJobList) {
         free(pJobList->ppJob[i]);
     }
     free(pJobList->ppJob);
+}
+
+void vPrintJobList(sJobList *pJobList) {
+    
+    for (int i = 0; i < pJobList->iTotalJobs; i++) {
+        printf("\t Job %d, iRowBegin %d, iRowEnd %d, iColBegin %d, iColEnd %d\n", i, pJobList->ppJob[i]->iRowBegin, pJobList->ppJob[i]->iRowEnd, pJobList->ppJob[i]->iColBegin, pJobList->ppJob[i]->iColEnd);
+    }
+
 }

@@ -11,7 +11,7 @@
  *                  Christoph Klein
  *                  Günther Schindler
  *
- * LAST CHANGE      14. NOV 2014
+ * LAST CHANGE      17. NOV 2014
  *
  ********************************************************************************/
 
@@ -140,4 +140,11 @@ int vAllocateJobList(int, sJobList*);
 * RETURN      - void
 */
 void vFreeJobList(sJobList*);
+
+/*
+* DESCRIPTION - Prints a job List
+* PARAMETER   - sJobList*: the job list
+* RETURN      - void
+*/
+void vPrintJobList(sJobList*);
  #endif

@@ -11,7 +11,7 @@
  *                  Christoph Klein
  *                  Günther Schindler
  *
- * LAST CHANGE      16. NOV 2014
+ * LAST CHANGE      17. NOV 2014
  *
  ********************************************************************************/
 
@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <mpi.h>
 
+#define _DEBUG_ true
 
 const static char DEFAULT_DISTRIBUTION = 't'; // 't' = tree or 'r' = row
 const static int DEFAULT_MAT_SIZE = 10;
@@ -94,7 +95,10 @@ int main (int argc, char *argv[]) {
         int iWorkers; // working processes 
         sJobList jobList;
         double dStartTime, dEndTime;
-    
+        
+        if (_DEBUG_) 
+            printf("%d:main: going to allocate memory for matrices\n",mpiRank);
+
         /* allocate memory for matrices */
         if(vAllocMatrix(&sMa, iSize, iSize))
             exit(1);
@@ -102,7 +106,10 @@ int main (int argc, char *argv[]) {
             exit(1);
         if(vAllocMatrix(&sMc, iSize, iSize))
             exit(1);
-    
+   
+        if (_DEBUG_)
+            printf("0:main: going to initialize matrix A and B\n");
+
         /* initialize matrix A & B */
         vInitMatrixA(&sMa);
         vInitMatrixB(&sMb);
@@ -112,11 +119,16 @@ int main (int argc, char *argv[]) {
             iWorkers = mpiSize - 1;
         else 
             iWorkers = mpiSize;
-   
+  
         /* initialize job list */
+        if (_DEBUG_)
+            printf("0:main: going to allocate memory for job list\n");
         vAllocateJobList(iWorkers, &jobList);
 
        /* distribute output matrix with wanted sheme */
+        if (_DEBUG_)
+            printf("0:main: going to calculate the job distribution\n");
+
         if (bTreeDistribution) { 
             vDistributeOutputMatrix(iSize, iSize, &jobList);
         }
@@ -124,14 +136,23 @@ int main (int argc, char *argv[]) {
             printf("***\n***ERROR: row sheme not available yet\n***\n");
             exit(1);
         }
-
+        
+        if (_DEBUG_) {
+            printf("0:main: got the following jobList\n");
+            vPrintJobList(&jobList);
+        }
         /* start time measurement */
+        if (_DEBUG_)
+            printf("0:main: going to start time measurement\n");
         dStartTime = MPI_Wtime();
 
         /* 
         * send jobs to other processes 
         * if main calculating: job nr 0 is reserved for main process.
         */
+        if (_DEBUG_)
+            printf("0:main: going to send jobs to other processes\n");
+
         for (int i = 1; i < mpiSize; i++) {
             int j = (iWorkers == mpiSize) ? i : (i-1);
             vSendJobToProc(&sMa, &sMb, jobList.ppJob[j], i, optBlockingSend);
@@ -143,6 +164,8 @@ int main (int argc, char *argv[]) {
         }
 
         /* get the calculation of other processes */
+        if (_DEBUG_)
+            printf("0:main: going to recieve the matrix data from other processes\n");
         for (int i = 1; i < mpiSize; i++) {
             int j = (iWorkers == mpiSize) ? i : (i-1);
             vRecvResFromProc(&sMc, i, jobList.ppJob[j]);
@@ -152,8 +175,10 @@ int main (int argc, char *argv[]) {
         dEndTime = MPI_Wtime();
 
         /* print output if wanted */
-        if (optPrintMat)
+        if (optPrintMat) {
+            printf("0:main: The Resulting Matrix:\n");
             vPrintMatrix(&sMc);
+        }
         
         /* free allocated memory */
         vFreeJobList(&jobList);
@@ -167,16 +192,30 @@ int main (int argc, char *argv[]) {
         sMatrix sMa, sMb, sMc;
 
         /* get data from main process and allocate memory */
+        if (_DEBUG_)
+            printf("%d:main: going to recieve jobs\n",mpiRank);
+
         vRecvJobFromProc(&sMa, &sMb, 0, optBlockingSend);
         
         /* allocate memory for result matrix */
+        if (_DEBUG_) {
+            printf("%d:main: going to allocate memory for resulting matrix\n\tsMa.iRow = %d, sMb.iCol =%d\n",mpiRank, sMa.iRow, sMb.iCol);
+        }
         if (vAllocMatrix(&sMc, sMa.iRow, sMb.iCol))
             exit(1);
         
         /* execute the multiplication */
+        if (_DEBUG_)
+            printf("%d:main: going to execute matrix multiplication with\n\tsMa.iRow = %d, sMa.iCol = %d, sMb.iRow = %d, sMb.iCol = %d\n", mpiRank, sMa.iRow, sMa.iCol, sMb.iRow, sMb.iCol);
+
         iMatrixMultiply(&sMa, &sMb, &sMc);
     
         /* send result back to main process */        
+        if (_DEBUG_) {
+            printf("%d:main: going to send result back to main process\n",mpiRank);
+            printf("%d:main: Matrix looks like\n",mpiRank); 
+            vPrintMatrix(&sMc);
+        }
         vSendResToProc(&sMc, 0);
 
         /* free allocated memory */
