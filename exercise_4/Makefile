@@ -8,7 +8,7 @@ CC = mpicc
 CPP = mpic++
 CFLAGS = 
 TEXC = pdflatex
-DOCUNAME = docu_3
+DOCUNAME = docu_4
 
 .PHONY: mat_mult
 mat_mult:
@@ -16,9 +16,8 @@ mat_mult:
 
 .PHONY: docu
 docu :
-	$(TEXC) $(DOCUNAME).tex
+	$(TEXC) docu/$(DOCUNAME).tex
 
 .PHONY: clean
 clean:
 	rm -rf ./bin/*
-    
