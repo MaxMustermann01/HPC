@@ -212,7 +212,7 @@ int main (int argc, char *argv[]) {
 
             dStartSeq = MPI_Wtime(); 
 
-            iMatrixMultiply(&sMa, &sMb, &sMseq);
+            iTilledMatrixMultiply(&sMa, &sMb, &sMseq, 16);
 
             dEndSeq = MPI_Wtime();
             dSeqTime = dEndSeq - dStartSeq;
