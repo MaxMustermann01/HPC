@@ -263,6 +263,7 @@ C[4,] & 0 & 70 & 140 & 210 & 280 \\
 %	Matrix multiply – scaling process count
 %----------------------------------------------------------------------------------------
 \begin{homeworkProblem}[Matrix multiply – scaling process count]
+Following table shows the results of the matrix-multiply.
  \begin{center}
 \begin{tabular}{ |c|c|c|c|c|c| } 
 \hline
@@ -289,31 +290,45 @@ Sequential & 53 & 1.0 & 100\% \\
 \end{tabular}
 \end{center} 
 \end{homeworkProblem}
+As we see in following plot the resulting speed-ups are not satisfying. This could be due
+to the cache-optimized version of the comperative matrix-multiply. 
+\begin{center}
+\includegraphics[width=0.6\columnwidth]{docu/image_1.png}
+\end{center}
+The efficiency falls slightly with growing processes. This represents the expected
+behaviour.
+\begin{center}
+\includegraphics[width=0.6\columnwidth]{docu/image.png}
+\end{center}
 %----------------------------------------------------------------------------------------
 %	Matrix multiply – scaling problem size
 %----------------------------------------------------------------------------------------
 \begin{homeworkProblem}[Matrix multiply – scaling problem size]
- \begin{center}
+The table below shows the results for the matrix multiply with varying problem size
+and constant process count of 16. It shows, that highest GFLOP/s can be reached between
+the size 256 and 512.
+\begin{center}
 \begin{tabular}{ |c|c|c|c|c|c| } 
 \hline
-Problem Size & Time[s] & FLOP [M/G] & GFLOP/s \\
+Problem Size & Time[s] & FLOP & GFLOP/s \\
 \hline
-128 &  &  &  \\
+128 & 0.018 & 4.19*$10^{6}$ & 0.23 \\
 \hline
-256 &  &  & \\ 
+256 & 0.036 & 3.36*$10^{7}$ & 0.93\\ 
 \hline
-512 &  &  &  \\ 
+512 & 0.249 & 2.68*$10^{8}$ &  1.08\\ 
 \hline
-1024 &  &  &  \\ 
+1024 & 3.77 & 2.15*$10^{9}$&  0.57\\ 
 \hline
-2048 &  &  &  \\
+2048 & 40 & 1.84*$10^{10}$ &  0.46\\
 \hline
-4096 &  &  &  \\
+4096 & 304 & 1.37*$10^{11}$ &  0.45\\
 \hline
-8192 &  &  &  \\
+8192 & - & - & - \\
 \hline
 \end{tabular}
 \end{center} 
 \end{homeworkProblem}
+NOTE: Due to time limit, we couldn't measure the problem size of 8192.
 \clearpage
 \end{document}
