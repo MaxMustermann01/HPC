@@ -15,6 +15,7 @@
 \usepackage{lipsum} % Used for inserting dummy 'Lorem ipsum' text into the template
 \usepackage[utf8]{inputenc}
 \usepackage[ngerman]{babel}
+\usepackage{multirow}
 
 % Margins
 \topmargin=-0.45in
@@ -238,7 +239,26 @@ of the source data, which you can find in the \texttt{/src/} directory.
 %----------------------------------------------------------------------------------------
 \begin{homeworkProblem}[Matrix multiply – parallel version using MPI]
 
-\end{homeworkProblem}
+After executing the matrix multiply with 2 worker processes, we can verify the correct
+behaviour of the matrix multiply as shown below.
+ \begin{center}
+\begin{tabular}{ |c|c|c|c|c|c| } 
+\hline
+C[i,j] & C[,0] & C[,1] & C[,2] & C[,3] & C[,4] \\
+\hline
+C[0,] & 0 & 30 & 60 & 90 & 120 \\ 
+\hline
+C[1,] & 0 & 40 & 80 & 120 & 160 \\ 
+\hline
+C[2,] & 0 & 50 & 100 & 150 & 200 \\ 
+\hline
+C[3,] & 0 & 60 & 120 & 180 & 240 \\
+\hline
+C[4,] & 0 & 70 & 140 & 210 & 280 \\
+\hline
+\end{tabular}
+\end{center}
+\end{homeworkProblem} 
 \clearpage
 %----------------------------------------------------------------------------------------
 %	Matrix multiply – scaling process count

@@ -12,7 +12,7 @@ DOCUNAME = docu_4
 
 .PHONY: mat_mult
 mat_mult:
-	$(CPP) $(CFLAGS) ./src/main.c ./src/distribution.c ./src/tests.c ./src/parallel_matmult.c ./src/matrix_multiply.c -o ./bin/mat_mult 
+	$(CPP) $(CFLAGS) ./src/main.c ./src/distribution.c ./src/tests.c ./src/parallel_matmult.c ./src/matrix_multiply.c -o mat_mult 
 
 .PHONY: docu
 docu :
