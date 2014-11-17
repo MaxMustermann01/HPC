@@ -31,10 +31,20 @@ const static int DEFAULT_MAT_SIZE = 10;
 const static bool DEFAULT_SENDING_MAIN = false;
 const static bool DEFAULT_VERIFY_RESULT = false;
 const static char DEFAULT_SENDING = 'n'; // 'n' = non-blocking or 'b' = blocking
-const static bool DEFAULT_PRINT_OUTPUT = true;
+const static bool DEFAULT_PRINT_OUTPUT = false;
+
+void printHelp();
 
 int main (int argc, char *argv[]) {
 
+    bool optHelp = false;
+    optHelp = chCommandLineGetBool("h", argc, argv);
+    if (optHelp) {
+        printHelp();    
+        return 0;
+    }
+        
+    
     int mpiSize;
     int mpiRank;
     MPI_Status mpiStatus;
@@ -86,6 +96,10 @@ int main (int argc, char *argv[]) {
     bool optPrintMat = DEFAULT_PRINT_OUTPUT;
     optPrintMat = chCommandLineGetBool("p", argc, argv);
 
+    /* compare with sequential time */
+    bool optCompareSeq = false;
+    optCompareSeq = chCommandLineGetBool("c", argc, argv);
+
 /******** START CALCULATIONS ********/
     
     if (mpiRank == 0) {
@@ -94,7 +108,7 @@ int main (int argc, char *argv[]) {
         int iSize = optMatSize;
         int iWorkers; // working processes 
         sJobList jobList;
-        double dStartTime, dEndTime;
+        double dStartTime, dEndTime, dTime;
         
         if (_DEBUG_) 
             printf("%d:main: going to allocate memory for matrices\n",mpiRank);
@@ -175,6 +189,7 @@ int main (int argc, char *argv[]) {
 
         /* stop time measurement */
         dEndTime = MPI_Wtime();
+        dTime = dEndTime - dStartTime;
 
         /* print output if wanted */
         if (optPrintMat) {
@@ -183,6 +198,59 @@ int main (int argc, char *argv[]) {
             printf("\n\n");
         }
         
+        /* 
+        * Verification with sequential result if wanted 
+        * or measure speedup
+        */
+        if (optVerifyResult || optCompareSeq ) {
+
+            sMatrix sMseq;
+            double dStartSeq, dEndSeq, dSeqTime; 
+
+            if (vAllocMatrix(&sMseq, iSize, iSize))
+                exit(1);
+
+            dStartSeq = MPI_Wtime(); 
+
+            iMatrixMultiply(&sMa, &sMb, &sMseq);
+
+            dEndSeq = MPI_Wtime();
+            dSeqTime = dEndSeq - dStartSeq;
+
+            bool equal = bMatrixEqual(&sMseq, &sMc);
+            
+            /* output for verification */
+            if (equal && optVerifyResult)
+                printf("Verification with sequential result [OK]\n\n");
+            else if (optVerifyResult)
+                printf("Verification with sequential result [FAILED]\n\n");
+
+            /* output for comparison */
+            if (optCompareSeq) {
+                printf("Comparison with sequential calculation time\n");
+                printf("\tSequential time %.10f s\n", dSeqTime);
+                printf("\tParallel (%d workers) time %.10f s\n", iWorkers, dTime);
+                printf("\t->Speedup of %.5f\n",dSeqTime/dTime);
+                printf("\t->Efficiency %.5f\n\n",dSeqTime/(dTime * ((double) iWorkers)));
+            }
+
+        }
+       
+        /* standard output */
+        
+        /*
+        * per element in output matrix we have iSize
+        * multiplications and iSize-1 additions
+        */
+        double dGFLOPS = 1e-9*((double) (iSize*iSize*(iSize+iSize-1)))/dTime;
+
+        printf("Parallel matrix multiplication done with\n");
+        printf("\tWorkers %d\n",iWorkers); 
+        printf("\tProcesses %d\n",mpiSize);
+        printf("\tMatrix height and width %d\n",iSize);
+        printf("\tTime nedded %.10f s\n",dTime);
+        printf("\tGFLOP/s %e\n\n", dGFLOPS);
+
         /* free allocated memory */
         vFreeJobList(&jobList);
         vFreeMatrix(&sMa);
@@ -228,4 +296,18 @@ int main (int argc, char *argv[]) {
     }
 
     return 0;
+}
+
+void printHelp() {
+    printf("Usage:\n");
+    printf("\tmpirun [-np <number of processes>] [-host <hosts,>] <programName>\n");
+    printf("\t\t[-s <matrix size>]\n");
+    printf("\t-p\n\t  print output matrix\n");
+    printf("\t-sm\n\t  main process does not do matrix calculations\n");
+    printf("\t-vr\n\t  verify result with a sequential execution\n");
+    printf("\t-c\n\t  compare parallel with sequential execution time\n");
+    printf("\t-b\n\t  use a blocking mpi send\n");
+    printf("\t-t\n\t  run only tests in tests.c\n");
+    printf("\t-td\n\t  use the tree sheme to distribute the jobs (default)\n");
+    printf("\t-rd\n\t  use the row sheme to distribute the jobs (not implmented yet)\n");
 }

@@ -152,3 +152,16 @@ void vPrintMatrix(sMatrix *pM)
   }
   printf("\n");
 }
+
+bool bMatrixEqual(sMatrix *pMa, sMatrix *pMb) {
+
+    if (pMa->iRow != pMb->iRow || pMa->iCol != pMb->iCol)
+        return false;
+    for (int i = 0; i < pMa->iRow; i++) {
+        for (int j = 0; j < pMa->iCol; j++) {
+            if (pMa->ppaMat[i][j] != pMb->ppaMat[i][j])
+                return false;
+        }
+    }
+    return true;
+}

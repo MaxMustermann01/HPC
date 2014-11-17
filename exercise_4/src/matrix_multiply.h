@@ -85,4 +85,13 @@ void vInitMatrixA(sMatrix *);
  */
 void vInitMatrixB(sMatrix *);
 
+/*
+* DESCRIPTION - Compares two matrices. If every
+*               element is equal the function 
+*               returns true.
+* PARAMETER   - sMatrix*: first Matrix
+*             - sMatrix*: second Matrix
+* RETURN      - boolean
+*/
+bool bMatrixEqual(sMatrix*, sMatrix*);
 #endif
