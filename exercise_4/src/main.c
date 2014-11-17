@@ -294,7 +294,7 @@ int main (int argc, char *argv[]) {
         vFreeMatrix(&sMb);
         vFreeMatrix(&sMc);
     }
-
+    MPI_Finalize();
     return 0;
 }
 
