@@ -18,7 +18,7 @@
 #include "matrix_multiply.h"
 #include "distribution.h"
 #include <mpi.h>
-#define _DEBUG_ true
+#define _DEBUG_ false
 
 void vSendJobToProc(sMatrix *pMatA, sMatrix *pMatB, sJob *pJob, int iDest, bool bBlock) {
     
@@ -50,7 +50,6 @@ void vSendJobToProc(sMatrix *pMatA, sMatrix *pMatB, sJob *pJob, int iDest, bool 
     if (_DEBUG_) {
         printf("vSendJobToProc: going to send the following matrix sizes:\n");
         printf("\tiRowA = %d, iColA = %d, iRowB = %d, iColB = %d\n", iRowA, iColA, iRowB, iColB);
-        printf("\tpMatA->iCol = %d, pMatA->iRow = %d, pMatB->iCol = %d, pMatB->iRow = %d\n", pMatA->iCol, pMatA->iRow, pMatB->iCol, pMatB->iRow);
     }
     /* use blocking send commands */
     if (bBlock) {
@@ -63,14 +62,30 @@ void vSendJobToProc(sMatrix *pMatA, sMatrix *pMatB, sJob *pJob, int iDest, bool 
         /* send col count for Job of Mat B */
         MPI_Send(&iColB, 1, MPI_INT, iDest, 3, MPI_COMM_WORLD); 
 
+        if (_DEBUG_) {
+            printf("vSendJobToProc: going to send this matrix A (job %d, dest %d)\n",pJob->iJob, iDest);
+        }
+
         /* Data for Matrix A */
         for (int i = JobA.iRowBegin; i < JobA.iRowEnd; i++) {
             MPI_Send(pMatA->ppaMat[i], iColA, MPI_INT, iDest, mpiTag++, MPI_COMM_WORLD);
+            if (_DEBUG_) {
+                for (int j = 0; j < iColA; j++)
+                    printf("%3d  ",pMatA->ppaMat[i][j]);
+                printf("\n");
+            }
         }
 
+        if (_DEBUG_)
+            printf("vSendJobToProc: going to send this matrix B (job %d, dest %d)\n",pJob->iJob, iDest);
         /* Data for Matrix B */
         for (int i = JobB.iRowBegin; i < JobB.iRowEnd; i++) {
-            MPI_Send(pMatB->ppaMat[i], iColB, MPI_INT, iDest, mpiTag++, MPI_COMM_WORLD);
+            MPI_Send(&(pMatB->ppaMat[i][JobB.iColBegin]), iColB, MPI_INT, iDest, mpiTag++, MPI_COMM_WORLD);
+            if (_DEBUG_) {
+                for (int j = JobB.iColBegin; j < JobB.iColEnd; j++)
+                    printf("%3d  ",pMatB->ppaMat[i][j]);
+                printf("\n");
+            }
         }
     }
 
@@ -92,7 +107,7 @@ void vSendJobToProc(sMatrix *pMatA, sMatrix *pMatB, sJob *pJob, int iDest, bool 
 
         /* Data for Matrix B */
         for (int i = JobB.iRowBegin; i < JobB.iRowEnd; i++) {
-            MPI_Isend(pMatB->ppaMat[i], iColB, MPI_INT, iDest, mpiTag++, MPI_COMM_WORLD, &request);
+            MPI_Isend(&(pMatB->ppaMat[i][JobB.iColBegin]), iColB, MPI_INT, iDest, mpiTag++, MPI_COMM_WORLD, &request);
         }
     }
 }
@@ -130,6 +145,13 @@ void vRecvJobFromProc(sMatrix *pMatA, sMatrix *pMatB, int mpiSource, bool mpiBlo
         /* Data for Matrix B */
         for (int i = 0; i<pMatB->iRow; i++) {
             MPI_Recv(pMatB->ppaMat[i], pMatB->iCol, MPI_INT, mpiSource, mpiTag++, MPI_COMM_WORLD, &mpiStatus);
+        }
+
+        if (_DEBUG_) {
+            printf("vRecvJobFromProc: got the Matrix A\n");
+            vPrintMatrix(pMatA);
+            printf("vRecvJobFromProc: got the Matrix B\n");
+            vPrintMatrix(pMatB);
         }
     }
 
@@ -190,7 +212,7 @@ void vRecvResFromProc(sMatrix *pMatC, int mpiSource, sJob *pJob) {
     int mpiTag = 0;
     int iColJ = pJob->iColEnd - pJob->iColBegin; // columns of job
     for (int i = pJob->iRowBegin; i < pJob->iRowEnd; i++) {
-        MPI_Recv(pMatC->ppaMat[i], iColJ, MPI_INT, mpiSource, mpiTag++, MPI_COMM_WORLD, &mpiStatus);
+        MPI_Recv(&(pMatC->ppaMat[i][pJob->iColBegin]), iColJ, MPI_INT, mpiSource, mpiTag++, MPI_COMM_WORLD, &mpiStatus);
     }
 }
 

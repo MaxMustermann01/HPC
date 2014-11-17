@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include <mpi.h>
 
-#define _DEBUG_ true
+#define _DEBUG_ false
 
 const static char DEFAULT_DISTRIBUTION = 't'; // 't' = tree or 'r' = row
 const static int DEFAULT_MAT_SIZE = 10;
@@ -152,9 +152,10 @@ int main (int argc, char *argv[]) {
         */
         if (_DEBUG_)
             printf("0:main: going to send jobs to other processes\n");
-
+        
+        int j;
         for (int i = 1; i < mpiSize; i++) {
-            int j = (iWorkers == mpiSize) ? i : (i-1);
+            j = (iWorkers == mpiSize) ? i : (i-1);
             vSendJobToProc(&sMa, &sMb, jobList.ppJob[j], i, optBlockingSend);
         }
 
@@ -166,8 +167,9 @@ int main (int argc, char *argv[]) {
         /* get the calculation of other processes */
         if (_DEBUG_)
             printf("0:main: going to recieve the matrix data from other processes\n");
+
         for (int i = 1; i < mpiSize; i++) {
-            int j = (iWorkers == mpiSize) ? i : (i-1);
+            j = (iWorkers == mpiSize) ? i : (i-1);
             vRecvResFromProc(&sMc, i, jobList.ppJob[j]);
         }
 
@@ -176,8 +178,9 @@ int main (int argc, char *argv[]) {
 
         /* print output if wanted */
         if (optPrintMat) {
-            printf("0:main: The Resulting Matrix:\n");
+            printf("The Resulting Matrix:\n");
             vPrintMatrix(&sMc);
+            printf("\n\n");
         }
         
         /* free allocated memory */
