@@ -198,18 +198,11 @@ void vRelaxMatrix(sMatrixDouble *pM)
   for(i=0; i<pM->iRow; i++)
     for(j=0; j<pM->iCol; j++)
     {
-      /* Inject 127.0 */
-      if(i == 0 && j >= (pM->iCol/4) && j <= (3*(pM->iCol)/4))
-        pM->ppaMat[i][j]=127.0;
-      /* Set boundary points to 0.0 */
-      else if(i==0  || i==pM->iRow-1 || j==0 || j==pM->iCol-1)
-        pM->ppaMat[i][j]=0.0;
-      else
+      /* Ignore boundary points to 0.0 */
+      if(!(i==0  || i==pM->iRow-1 || j==0 || j==pM->iCol-1))
       {
         pM->ppaMat[i][j]=sMTmp.ppaMat[i][j];
-        pM->ppaMat[i][j]+=FI*((-4)*sMTmp.ppaMat[i][j] \
-                        +sMTmp.ppaMat[i+1][j]+sMTmp.ppaMat[i-1][j] \
-                        +sMTmp.ppaMat[i][j+1]+sMTmp.ppaMat[i][j-1]);
+        pM->ppaMat[i][j]+=FI*((-4)*sMTmp.ppaMat[i][j]+sMTmp.ppaMat[i+1][j]+sMTmp.ppaMat[i-1][j]+sMTmp.ppaMat[i][j+1]+sMTmp.ppaMat[i][j-1]);
       }
     }
   /* Delete temporary matrix again */
