@@ -171,8 +171,116 @@
 %----------------------------------------------------------------------------------------
 
 \begin{homeworkProblem}[Heat Relaxation – Sequential Implementation]
+As part of the 5th exercise we should implement a program, which calculates the new 
+value of grid points as average of the point itself and its four direct neighbors.
+\\
+Therefor we implemented the subroutine vRelaxMatrix(), which does the described
+calculation. This function is based on the structure sMatrixDouble, used for the grid.
+Before the function starts the calculation it copies the grid into a temporary grid.
+Now the function calculates every new value of grid points, except the grid points
+at the borders.
+\begin{lstlisting}{c}
+void vRelaxMatrix(sMatrixDouble *pM)
+{
+  int i,j;
+  sMatrixDouble sMTmp;
+  /* Allocate memory for temporary matrix */
+  if(iAllocMatrixDouble(&sMTmp, pM->iRow, pM->iCol))
+  {
+    printf("DEBUG: Allocation failure!");
+    exit(1);
+  }
+  /* Copy each matrix element in the temporary matrix */
+  for(i=0; i<pM->iRow; i++)
+    for(j=0; j<pM->iCol; j++)
+      sMTmp.ppaMat[i][j]=pM->ppaMat[i][j];
+  /* Calculate new grid points */
+  for(i=0; i<pM->iRow; i++)
+    for(j=0; j<pM->iCol; j++)
+    {
+      /* Inject 127.0 */
+      if(i == 0 && j >= (pM->iCol/4) && j <= (3*(pM->iCol)/4))
+        pM->ppaMat[i][j]=127.0;
+      /* Set boundary points to 0.0 */
+      else if(i==0  || i==pM->iRow-1 || j==0 || j==pM->iCol-1)
+        pM->ppaMat[i][j]=0.0;
+      else
+      {
+        pM->ppaMat[i][j]=sMTmp.ppaMat[i][j];
+        pM->ppaMat[i][j]+=FI*((-4)*sMTmp.ppaMat[i][j] \
+                        +sMTmp.ppaMat[i+1][j]+sMTmp.ppaMat[i-1][j] \
+                        +sMTmp.ppaMat[i][j+1]+sMTmp.ppaMat[i][j-1]);
+      }
+    }
+  /* Delete temporary matrix again */
+  vFreeMatrixDouble(&sMTmp);
+}
+\end{lstlisting}
+Also we should inject heat in the topmost grid points (j=0), with i in between
+[N/4, 3N/4]. These grid points are set to 127. Every other grid point at the
+borders is set to 0.0. This functionality is realised by the subroutine vInjectMatrix().
+\begin{lstlisting}{C}
+void vInjectMatrix(sMatrixDouble *pM)
+{
+  int i,j;
+  
+  for(i=0; i<pM->iRow; i++)
+  {
+    for(j=0; j<pM->iCol; j++)
+    {
+      if(i == 0 && j >= (pM->iCol/4) && j <= (3*(pM->iCol)/4))
+	pM->ppaMat[i][j]=127.0;
+      else
+	pM->ppaMat[i][j]=0.0;
+    }
+  }
+}
+\end{lstlisting}
+The main program now injects the heat with the function vInjectMatrix(). With every
+iteration, it simulates the heat expansion as shown below.
+\begin{lstlisting}{C}
+   0.0 127.0 127.0 127.0 127.0 127.0   0.0
+   0.0   0.0   0.0   0.0   0.0   0.0   0.0
+   0.0   0.0   0.0   0.0   0.0   0.0   0.0
+   0.0   0.0   0.0   0.0   0.0   0.0   0.0
+   0.0   0.0   0.0   0.0   0.0   0.0   0.0
+   0.0   0.0   0.0   0.0   0.0   0.0   0.0
+   0.0   0.0   0.0   0.0   0.0   0.0   0.0
 
+   0.0 127.0 127.0 127.0 127.0 127.0   0.0
+   0.0  30.5  30.5  30.5  30.5  30.5   0.0
+   0.0   0.0   0.0   0.0   0.0   0.0   0.0
+   0.0   0.0   0.0   0.0   0.0   0.0   0.0
+   0.0   0.0   0.0   0.0   0.0   0.0   0.0
+   0.0   0.0   0.0   0.0   0.0   0.0   0.0
+   0.0   0.0   0.0   0.0   0.0   0.0   0.0
+
+   0.0 127.0 127.0 127.0 127.0 127.0   0.0
+   0.0  39.0  46.3  46.3  46.3  39.0   0.0
+   0.0   7.3   7.3   7.3   7.3   7.3   0.0
+   0.0   0.0   0.0   0.0   0.0   0.0   0.0
+   0.0   0.0   0.0   0.0   0.0   0.0   0.0
+   0.0   0.0   0.0   0.0   0.0   0.0   0.0
+   0.0   0.0   0.0   0.0   0.0   0.0   0.0
+   
+   0.0 127.0 127.0 127.0 127.0 127.0   0.0
+   0.0  44.9  54.6  56.3  54.6  44.9   0.0
+   0.0  11.4  14.9  14.9  14.9  11.4   0.0
+   0.0   1.8   1.8   1.8   1.8   1.8   0.0
+   0.0   0.0   0.0   0.0   0.0   0.0   0.0
+   0.0   0.0   0.0   0.0   0.0   0.0   0.0
+   0.0   0.0   0.0   0.0   0.0   0.0   0.0
+   
+   0.0 127.0 127.0 127.0 127.0 127.0   0.0
+   0.0  48.1  60.5  62.5  60.5  48.1   0.0
+   0.0  15.2  20.4  21.7  20.4  15.2   0.0
+   0.0   3.2   4.5   4.5   4.5   3.2   0.0
+   0.0   0.4   0.4   0.4   0.4   0.4   0.0
+   0.0   0.0   0.0   0.0   0.0   0.0   0.0
+   0.0   0.0   0.0   0.0   0.0   0.0   0.0
+\end{lstlisting}
 \end{homeworkProblem}
+\pagebreak
 %----------------------------------------------------------------------------------------
 %	Heat Relaxation - Experiments
 %----------------------------------------------------------------------------------------
