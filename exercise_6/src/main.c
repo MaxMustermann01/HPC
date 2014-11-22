@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
   MPI_Status mpiStatus;
   
   double dValue;
-  sMatrixDouble sMgrid, sMleft, sMright, sMTmp;
+  sMatrixDouble sMgrid, sMleftTmp, sMrightTmp, sMgridTmp;
   
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &iNumTasks);
@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
     
     /* Allocate memory for grid and inject heat */
     iAllocMatrixDouble(&sMgrid, iSize, iSize);
-    vInjectMatrix(%sMgrid);
+    vInjectMatrix(&sMgrid);
     
     /* Distribute work to tasks */
     for(i=1; i<=iNumWorker; i++)
@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
       MPI_Send(&iLeftNeighbor, 1, MPI_INT, i, BEGIN, MPI_COMM_WORLD);
       MPI_Send(&iRightNeighbor, 1, MPI_INT, i, BEGIN, MPI_COMM_WORLD);
       /* Send Data */
-      MPI_Send(&(sMgrid.ppaMat[iFrom][0]), iRows*sMgrid.iCol, MPI_DOUBLE, i, MPI_COMM_WORLD);
+      MPI_Send(&(sMgrid.ppaMat[iFrom][0]), iRows*sMgrid.iCol, MPI_DOUBLE, i, BEGIN, MPI_COMM_WORLD);
     }
     /* Collect results from tasks */
     for(i=1; i<=iNumWorker; i++)
@@ -125,13 +125,13 @@ int main(int argc, char* argv[])
     {
       if(iLeftNeighbor != 0)
       {
-        MPI_Send(&(sMgridTmp.ppaMat[1][0], iCols, MPI_DOUBLE, iLeftNeighbor, RIGHTTAG, MPI_COMM_WORLD);
-        MPI_Recv(&(sMleftTmp.ppaMat[0][0], iCols, MPI_DOUBLE, iLeftNeighbor, LEFTTAG, MPI_COMM_WORLD);
+        MPI_Send(&(sMgridTmp.ppaMat[1][0]), iCols, MPI_DOUBLE, iLeftNeighbor, RIGHTTAG, MPI_COMM_WORLD);
+        MPI_Recv(&(sMleftTmp.ppaMat[0][0]), iCols, MPI_DOUBLE, iLeftNeighbor, LEFTTAG, MPI_COMM_WORLD, &mpiStatus);
       }
       if(iRightNeighbor != 0)
       {
-        MPI_Send(&(sMgridTmp.ppaMat[iRows-1][0], iCols, MPI_DOUBLE, iRightNeighbor, LEFTTAG, MPI_COMM_WORLD);
-        MPI_Recv(&(sMrightTmp.ppaMat[iRows][0], iCols, MPI_DOUBLE, iRightNeighbor, RIGHTTAG, MPI_COMM_WORLD);
+        MPI_Send(&(sMgridTmp.ppaMat[iRows-1][0]), iCols, MPI_DOUBLE, iRightNeighbor, LEFTTAG, MPI_COMM_WORLD);
+        MPI_Recv(&(sMrightTmp.ppaMat[iRows][0]), iCols, MPI_DOUBLE, iRightNeighbor, RIGHTTAG, MPI_COMM_WORLD, &mpiStatus);
       }
       /* Calculate new grid points */
       for(j=1; j<sMgrid.iRow-1; j++)
@@ -159,12 +159,13 @@ int main(int argc, char* argv[])
         }
       }
     }
-  MPI_Send(&iFrom, 1, MPI_INT, MASTER, DONE, MPI_COMM_WORLD);
-  MPI_Send(&iRows, 1, MPI_INT, MASTER, DONE, MPI_COMM_WORLD);
-  MPI_Send(&(sMgrid.ppaMat[0][0], iRows*iCols, MPI_DOUBLE, MASTER, DONE, MPI_COMM_WORLD);
-  /* Free allocated memory */
-  vFreeMatrixDouble(&sMgrid);
-  vFreeMatrixDouble(&sMgridTmp);
-  MPI_Finalize();
-  return EXIT_SUCCESS;
+    MPI_Send(&iFrom, 1, MPI_INT, MASTER, DONE, MPI_COMM_WORLD);
+    MPI_Send(&iRows, 1, MPI_INT, MASTER, DONE, MPI_COMM_WORLD);
+    MPI_Send(&(sMgrid.ppaMat[0][0]), iRows*iCols, MPI_DOUBLE, MASTER, DONE, MPI_COMM_WORLD);
+    /* Free allocated memory */
+    vFreeMatrixDouble(&sMgrid);
+    vFreeMatrixDouble(&sMgridTmp);
+    MPI_Finalize();
+    return EXIT_SUCCESS;
+  }
 }

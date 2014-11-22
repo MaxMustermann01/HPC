@@ -14,7 +14,7 @@ DOCUNAME = docu_4
 relaxation:
 	$(CC) $(CFLAGS)		src/main.c \
 				src/matrix.c \
-				src/time_measurement.c.c \
+				src/time_measurement.c \
 				-o relaxation 
 
 .PHONY: docu

@@ -32,8 +32,6 @@ typedef struct sMatrixDouble
  */
 void vRelaxInteriorElement(sMatrixDouble *);
 
-void vRelaxBorderElement(sMatrixDouble *);
-
 /*
  * DESCRIPTION - Inject Matrix with elements 
  * PARAMETER   - sMatrixInt: pointer to a sMatrix type in which should be injected

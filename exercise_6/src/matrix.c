@@ -43,11 +43,6 @@ void vRelaxInteriorElement(sMatrixDouble *pM)
   
 }
 
-void vRelaxBorderElement(sMatrixDouble *pM, sMatrixDouble *pMleft, sMatrixDouble *pMright)
-{
-
-}
-
 void vInjectMatrix(sMatrixDouble *pM)
 {
   int i,j;
