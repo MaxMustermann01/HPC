@@ -21,6 +21,7 @@
 int iAllocMatrixDouble(sMatrixDouble *pM, int iRow, int iCol)
 { 
   int i=0, iRet=0;
+  double * pdtmp;
   /* Init rows and cols in matrix structure */
   pM->iCol=iCol;
   pM->iRow=iRow;
@@ -28,10 +29,13 @@ int iAllocMatrixDouble(sMatrixDouble *pM, int iRow, int iCol)
   pM->ppaMat = malloc(iRow * sizeof(double *));
   if(NULL == pM->ppaMat)
     iRet=1;
+  pdtmp = (double *)malloc(iRow * iCol *sizeof(double));
   /* Allocate Memory for Rows */
   for(i=0; i < iRow; i++)
   {
-    pM->ppaMat[i] = malloc(iCol * sizeof(double *));
+    // pM->ppaMat[i] = malloc(iCol * sizeof(double *));
+    /* make it contiguous in memory */
+    pM->ppaMat[i] = pdtmp + (i*iCol);
     if(NULL == pM->ppaMat[i])
       iRet=1;
   }
