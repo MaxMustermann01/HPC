@@ -202,7 +202,11 @@ void vRelaxMatrix(sMatrixDouble *pM)
       if(!(i==0  || i==pM->iRow-1 || j==0 || j==pM->iCol-1))
       {
         pM->ppaMat[i][j]=sMTmp.ppaMat[i][j];
-        pM->ppaMat[i][j]+=FI*((-4)*sMTmp.ppaMat[i][j]+sMTmp.ppaMat[i+1][j]+sMTmp.ppaMat[i-1][j]+sMTmp.ppaMat[i][j+1]+sMTmp.ppaMat[i][j-1]);
+        pM->ppaMat[i][j]+=FI*((-4)*sMTmp.ppaMat[i][j] \
+                        +sMTmp.ppaMat[i+1][j] \
+                        +sMTmp.ppaMat[i-1][j] \
+                        +sMTmp.ppaMat[i][j+1] \
+                        +sMTmp.ppaMat[i][j-1]);
       }
     }
   /* Delete temporary matrix again */
@@ -319,7 +323,35 @@ latency.
 %	Heat Relaxation – Pre-considerations for parallelization
 %----------------------------------------------------------------------------------------
 \begin{homeworkProblem}[Heat Relaxation – Pre-considerations for parallelization]
+The basic idea is to implement the program as an SPMD model.
+In order to decompose this problem into sub-tasks, we partition the entire array and
+distribute the slices to all tasks. Each task owns a portion of the total array.
 
+2D is the more suitable way to partition because we need 2 dimensions for each grid 
+calculation. 1D partition is also possible but needs much more communication. 
+
+We choose to split the array in row-major order because in row-major order, the rows
+of the array are contiguous in memory. It is important for performance when traversing
+the array because accessing array elements that are contiguous in memory is faster than
+accessing elements which are not, due to caching.
+\begin{center}
+\includegraphics[width=0.6\columnwidth]{docu/image01-1.jpg}
+\end{center}
+
+The tasks depend on thier border rows. Interior-elements (1) belong to one task and 
+are independent of other tasks. Border-elements (2) are dependent upon a neighbor 
+task's data, so they need communication.
+\begin{center}
+\includegraphics[width=0.6\columnwidth]{docu/image01-2.jpg}
+\end{center}
+
+We can use the independents of the interior-elements to hide latency and overlap 
+computation and communication. Thus, we use non-blocking communication to exchange
+data between the tasks. Each tasks sends its border-elements to it's neighbors, calculates
+the interior-elements and gets, in the meantime, the border-elements of the neighbors.
+After that, the task can calculate the border-elements as well.
+
+To synchronize after each iteration, we use a barrier.
 \end{homeworkProblem} 
 \clearpage
 \end{document}
