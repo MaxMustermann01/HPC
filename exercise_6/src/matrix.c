@@ -67,9 +67,10 @@ void vFreeMatrixDouble(sMatrixDouble *pM)
 {
   int i;
   /* free the Rows */
-  for(i=0; i<pM->iRow; i++)
-    free(pM->ppaMat[i]);
+  //for(i=0; i<pM->iRow; i++)
+    //free(pM->ppaMat[i]);
   /* free cols */
+  free(pM->ppaMat[0]);
   free(pM->ppaMat);
 }
 
