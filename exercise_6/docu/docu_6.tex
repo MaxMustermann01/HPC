@@ -169,25 +169,21 @@
 %----------------------------------------------------------------------------------------
 %	Heat Relaxation – Parallel Implementation
 %----------------------------------------------------------------------------------------
-
-\begin{homeworkProblem}[Parallel implementation based on 1D-row partitioning]
-
-\end{homeworkProblem}
-\pagebreak
+%
+%\begin{homeworkProblem}[Parallel implementation based on 1D-row partitioning]
+%
+%\end{homeworkProblem}
+%\pagebreak
 %----------------------------------------------------------------------------------------
 %	Heat Relaxation - Experiments
 %----------------------------------------------------------------------------------------
-\begin{homeworkProblem}[Heat Relaxation - Experiments]
-In order to calculate the flops we determined the equation
-\\
-$FLOPS = (N^{2} - 4N + 4) \cdot 7$ , with N = grid-size.
-\\
+\begin{homeworkProblem}[Heat Relaxation II - Experiments]
 Following table shows the average time for different grid-sizes. The measured results
-base on 50 to 10.000 iterations, depending on the used grid-size.\\
+base on 100 to 10.000 iterations, depending on the used grid-size.\\
 \begin{center}
 \begin{tabular}{ |c|c|c|c|c|c|c| }
 \hline 
-Time / Iteration & NP & NP & NP & NP & NP & NP\\
+\textbf{Time / Iteration} & NP & NP & NP & NP & NP & NP\\
 \hline
 Grid Size & 2 & 4 & 6 & 8 & 10 & 12\\
 \hline
@@ -203,11 +199,12 @@ Grid Size & 2 & 4 & 6 & 8 & 10 & 12\\
 \hline
 \end{tabular}
 \end{center}
-
+In order to calculate the Speedup we divided the execution time of the sequential implementation by the execution time of the parallel implementation for each grid-size and number of processes:
+$$Speedup = \frac{T_{s}}{T_{p}}$$ \\
 \begin{center}
 \begin{tabular}{ |c|c|c|c|c|c|c|c| }
 \hline 
-Time / Iteration & NP & NP & NP & NP & NP & NP & Sequential execution time\\
+\textbf{Speedup} & NP & NP & NP & NP & NP & NP & Sequential execution time\\
 \hline
 Grid Size & 2 & 4 & 6 & 8 & 10 & 12 &\\
 \hline
@@ -223,11 +220,15 @@ Grid Size & 2 & 4 & 6 & 8 & 10 & 12 &\\
 \hline
 \end{tabular}
 \end{center}
-
+Here you can see that the maximum speedup is reached for a grid-size of \textit{4k x 4k} with 12 processes. At a grid-size of \textit{2k x 2k} we reached the maximum Speedup with 8 processes. With every additional processes the speedup for this grid-size decreases. The reason for this is the overhead of the parallel implementation. \\ 
+This effect can be seen for the other grid-sizes as well which means that an additional amount of processes does not lead to an increasing speedup. \\
+In order to calculate the efficiency we used the following formula
+$$Efficiency = \frac{Speedup}{p}$$
+in which p is the number of involved processes.\\
 \begin{center}
 \begin{tabular}{ |c|c|c|c|c|c|c| }
 \hline 
-Time / Iteration & NP & NP & NP & NP & NP & NP\\
+\textbf{Efficiency} & NP & NP & NP & NP & NP & NP\\
 \hline
 Grid Size & 2 & 4 & 6 & 8 & 10 & 12 \\
 \hline
@@ -243,53 +244,13 @@ Grid Size & 2 & 4 & 6 & 8 & 10 & 12 \\
 \hline
 \end{tabular}
 \end{center}
-The plot below shows the performance in GFLOP/s depending on the grid-size. As we can
-see, the performance heavily depends on the grid-size between 128 and 1024. After a 
-grid-size of 1024 the performance continues steady. The number of floating point 
-operations doesn't realy affects the performance.
+This table represents the efficiency of our parallel implementation of the heat relaxation depending on grid-size and involved processes. For a grid-size of \textit{4k x 4k} with 12 involved processes - where we reached the highest speedup - we couldn't achieve the highest efficiency. For the given grid-size the maximum efficiency was reached with 4 involved processes. \\
+For smaller grid-sizes the highest speedup and efficiency can be reached with the same amount of processes. \\ 
+The bottom line is that the speedup and efficiency heavily depends on the problem size and the involved processes, whereas a higher amount of processes does not result in a faster and efficient computation. \\ \\ 
 \begin{center}
 %\includegraphics[width=0.6\columnwidth]{}
 \end{center}
-Due to that, we conclude that the program is memory bound and not computationally bound.
-The bottleneck is once again the size of the cache. For every relaxation we theoretically
-need at least twice the grid-size in the cache. If we haven't that much memory in
-cache it leads to cache misses, which results in a main memory access with much longer
-latency.
+
 \end{homeworkProblem}
-\pagebreak
-%----------------------------------------------------------------------------------------
-%	Heat Relaxation – Pre-considerations for parallelization
-%----------------------------------------------------------------------------------------
-\begin{homeworkProblem}[Heat Relaxation – Pre-considerations for parallelization]
-The basic idea is to implement the program as an SPMD model.
-In order to decompose this problem into sub-tasks, we partition the entire array and
-distribute the slices to all tasks. Each task owns a portion of the total array.
-
-2D is the more suitable way to partition because we need 2 dimensions for each grid 
-calculation. 1D partition is also possible but needs much more communication. 
-
-We choose to split the array in row-major order because in row-major order, the rows
-of the array are contiguous in memory. It is important for performance when traversing
-the array because accessing array elements that are contiguous in memory is faster than
-accessing elements which are not, due to caching.
-\begin{center}
-%\includegraphics[width=0.6\columnwidth]{docu/image01-1.jpg}
-\end{center}
-
-The tasks depend on thier border rows. Interior-elements (1) belong to one task and 
-are independent of other tasks. Border-elements (2) are dependent upon a neighbor 
-task's data, so they need communication.
-\begin{center}
-%\includegraphics[width=0.6\columnwidth]{docu/image01-2.jpg}
-\end{center}
-
-We can use the independents of the interior-elements to hide latency and overlap 
-computation and communication. Thus, we use non-blocking communication to exchange
-data between the tasks. Each tasks sends its border-elements to it's neighbors, calculates
-the interior-elements and gets, in the meantime, the border-elements of the neighbors.
-After that, the task can calculate the border-elements as well.
-
-To synchronize after each iteration, we use a barrier.
-\end{homeworkProblem} 
 \clearpage
 \end{document}
