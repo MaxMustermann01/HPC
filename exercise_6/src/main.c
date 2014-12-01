@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
     {
       printf("\nWrong number of arguments. Check usage!"
              " \nrelaxation <MATRIX_SIZE> <ITERATIONS> <OPTION>\n\n"
-             "<OPTION> : (1) Print Matrix, (0) Don't print Matrix\n");
+             "<OPTION> : (1) Print Matrix, (0) Print ellapsed time\n");
       MPI_Abort(MPI_COMM_WORLD, iErrorcode);
       exit(1);
     }
@@ -141,17 +141,17 @@ int main(int argc, char* argv[])
     {
       if(Neighbor[SOUTH] > 0)
       {
-        //MPI_Irecv(&(sMgridTmp[iIndex].ppaMat[0][0]), iCols, MPI_DOUBLE, Neighbor[SOUTH], LEFTTAG, comm1d, &rcv_request_1);
-        //MPI_Isend(&(sMgridTmp[iIndex].ppaMat[1][0]), iCols, MPI_DOUBLE, Neighbor[SOUTH], RIGHTTAG, comm1d, &snd_request_1);
-        MPI_Recv(&(sMgridTmp[iIndex].ppaMat[0][0]), iCols, MPI_DOUBLE, Neighbor[SOUTH], LEFTTAG, comm1d, &mpiStatus);
-        MPI_Send(&(sMgridTmp[iIndex].ppaMat[1][0]), iCols, MPI_DOUBLE, Neighbor[SOUTH], RIGHTTAG, comm1d);
+        MPI_Irecv(&(sMgridTmp[iIndex].ppaMat[0][0]), iCols, MPI_DOUBLE, Neighbor[SOUTH], LEFTTAG, comm1d, &rcv_request_1);
+        MPI_Isend(&(sMgridTmp[iIndex].ppaMat[1][0]), iCols, MPI_DOUBLE, Neighbor[SOUTH], RIGHTTAG, comm1d, &snd_request_1);
+        //MPI_Recv(&(sMgridTmp[iIndex].ppaMat[0][0]), iCols, MPI_DOUBLE, Neighbor[SOUTH], LEFTTAG, comm1d, &mpiStatus);
+        //MPI_Send(&(sMgridTmp[iIndex].ppaMat[1][0]), iCols, MPI_DOUBLE, Neighbor[SOUTH], RIGHTTAG, comm1d);
       }
       if(Neighbor[NORTH] > 0)
       {
-        //MPI_Irecv(&(sMgridTmp[iIndex].ppaMat[iRows+1][0]), iCols, MPI_DOUBLE, Neighbor[NORTH], RIGHTTAG, comm1d, &rcv_request_2);
-        //MPI_Isend(&(sMgridTmp[iIndex].ppaMat[iRows][0]), iCols, MPI_DOUBLE, Neighbor[NORTH], LEFTTAG, comm1d, &snd_request_2);
-        MPI_Send(&(sMgridTmp[iIndex].ppaMat[iRows][0]), iCols, MPI_DOUBLE, Neighbor[NORTH], LEFTTAG, comm1d);
-        MPI_Recv(&(sMgridTmp[iIndex].ppaMat[iRows+1][0]), iCols, MPI_DOUBLE, Neighbor[NORTH], RIGHTTAG, comm1d, &mpiStatus);
+        MPI_Irecv(&(sMgridTmp[iIndex].ppaMat[iRows+1][0]), iCols, MPI_DOUBLE, Neighbor[NORTH], RIGHTTAG, comm1d, &rcv_request_2);
+        MPI_Isend(&(sMgridTmp[iIndex].ppaMat[iRows][0]), iCols, MPI_DOUBLE, Neighbor[NORTH], LEFTTAG, comm1d, &snd_request_2);
+        //MPI_Send(&(sMgridTmp[iIndex].ppaMat[iRows][0]), iCols, MPI_DOUBLE, Neighbor[NORTH], LEFTTAG, comm1d);
+        //MPI_Recv(&(sMgridTmp[iIndex].ppaMat[iRows+1][0]), iCols, MPI_DOUBLE, Neighbor[NORTH], RIGHTTAG, comm1d, &mpiStatus);
       }
       /* Calculate new grid points and let border elements static */
       for(j=2; j<iRows; j++)
@@ -166,10 +166,10 @@ int main(int argc, char* argv[])
                                              +sMgridTmp[iIndex].ppaMat[j][k-1]);
         }
       /* Wait until data from neighbor is arrived */
-      //MPI_Wait(&snd_request_2, &mpiStatus);
-      //MPI_Wait(&snd_request_1, &mpiStatus);
-      //MPI_Wait(&rcv_request_2, &mpiStatus);
-      //MPI_Wait(&rcv_request_1, &mpiStatus);
+      MPI_Wait(&snd_request_2, &mpiStatus);
+      MPI_Wait(&snd_request_1, &mpiStatus);
+      MPI_Wait(&rcv_request_2, &mpiStatus);
+      MPI_Wait(&rcv_request_1, &mpiStatus);
       if(Neighbor[NORTH] > 0)
       {
         j=1;
