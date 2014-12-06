@@ -41,11 +41,9 @@ int main(int argc, char **argv) {
   sBody *bodys = initBody(nbodies, 10);
 
   for(int i = 0; i < iter; i++) {
-    for(int m = 0; m < nbodies; m++) {
-      for(int n = 0; n < nbodies; n++) {
-        if(m != n) {
-            applyForce(&bodys[m], &bodys[n], dt);
-        }
+    for(int m = 0; m < nbodies - 1; m++) {
+      for(int n = m + 1; n < nbodies; n++) {
+        applyForce(&bodys[m], &bodys[n], dt);
       }
     }
 

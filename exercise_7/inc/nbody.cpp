@@ -27,9 +27,9 @@ sBody* initBody(int nbodies, int max) {
 
   for(int i = 0; i < nbodies; i++) {
     bodys[i].dM = (double)(rand()%100);
-    bodys[i].dPx = (double)(rand()%10 + 1);
-    bodys[i].dPy = (double)(rand()%10 + 1);
-    bodys[i].dPz = (double)(rand()%10 + 1);
+    bodys[i].dPx = (double)(rand()%max + 1);
+    bodys[i].dPy = (double)(rand()%max + 1);
+    bodys[i].dPz = (double)(rand()%max + 1);
     bodys[i].dVx = 0.0;
     bodys[i].dVy = 0.0;
     bodys[i].dVz = 0.0;
@@ -45,18 +45,19 @@ void applyForce(sBody *m1, sBody *m2, double dt) {
   double distX = m2->dPx - m1->dPx;
   double distY = m2->dPy - m1->dPy;
   double distZ = m2->dPz - m1->dPz;
+  double distSquare = abs(distX*distX + distY*distY + distZ*distZ) 
 
-  double Fx = (G * m1->dM * m2->dM) / (abs(distX) * abs(distX));
-  double Fy = (G * m1->dM * m2->dM) / (abs(distY) * abs(distY));
-  double Fz = (G * m1->dM * m2->dM) / (abs(distZ) * abs(distZ));
+  double Fx = (G * m1->dM * m2->dM) / distSquare * distX;
+  double Fy = (G * m1->dM * m2->dM) / distSquare * distY;
+  double Fz = (G * m1->dM * m2->dM) / distSquare * distZ;
 
   double ax1 = Fx / m1->dM;
   double ay1 = Fy / m1->dM;
   double az1 = Fz / m1->dM;
 
-  double ax2 = Fx / m2->dM;
-  double ay2 = Fy / m2->dM;
-  double az2 = Fz / m2->dM;
+  double ax2 = - Fx / m2->dM;
+  double ay2 = - Fy / m2->dM;
+  double az2 = - Fz / m2->dM;
 
   m1->dVx += ax1 * dt;
   m1->dVy += ay1 * dt;

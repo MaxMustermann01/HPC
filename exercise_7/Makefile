@@ -15,11 +15,18 @@
 
 CPP = g++
 CFLAGS = -Wall
+CLATEX = pdflatex
+DOCUNAME = docu_7
 
 nbody :
 	$(CPP) $(CFLAGS)	src/main.cpp \
 						inc/nbody.cpp \
-						-o nbody
+						-o ./bin/nbody
 
 clean :
-	rm -f nbody
+	rm -f ./bin/nbody
+	rm -f  $(DOCUNAME).pdf $(DOCUNAME).log $(DOCUNAME).aux
+
+.PHONY: docu
+docu:
+	$(CLATEX) ./docu/$(DOCUNAME).tex

@@ -1,0 +1,49 @@
+\documentclass[oneside, a4paper, DIV=10]{scrartcl}
+
+
+% PACKAGES
+\usepackage[english]{babel}
+
+% TITLE
+\title{Exercise Sheet VII}
+\author{G\"unther Schindler, Klaus Naumann \& Christoph Klein}
+
+% DOCUMENT
+\begin{document}
+\maketitle
+
+% PART 1
+%%%%%%%%
+
+\section*{Reviews}
+\begin{itemize}
+    % first review
+    \item 
+    The paper 'Roofline: An Insightful Visual Performance Model for Multicore
+    Architectures' from Williams, Waterman and Patterson published in April 2009
+    starts with outlining the importance and usefulness of a model, which provides
+    performance guidelines for computational kernels on various computer
+    architectures.
+
+    They assert that memory bandwidth and the processor's maximal possible
+    calculations per time are the main limiting performance factors. They
+    visualize these performance limits in a coordinate system, with
+    operations per second on the $y$- and operational intensity,  which is
+    the amount of operations divided by the size of the fetched data
+    (e.g. from memory to cache or from cache to processor), on the 
+    $x$-axis.
+
+    If a programmer determines the operational intensity of a kernel he can
+    estimate the limiting performance factor in the described coordinate
+    system. The advantage for the programmer is that he knows how to optimize
+    efficiently his code.
+
+    To our mind the Roofline-Model provides a handy guideline for how to
+    determining bottlenecks and optimizing efficiently on various 
+    computer architectures.
+    % second review
+    \item
+\end{itemize}
+
+
+\end{document}
