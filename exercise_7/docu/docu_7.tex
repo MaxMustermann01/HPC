@@ -41,8 +41,43 @@
     To our mind the Roofline-Model provides a handy guideline for how to
     determining bottlenecks and optimizing efficiently on various 
     computer architectures.
+
     % second review
     \item
+    The paper 'LogP: Towards a Realistic Model of Parallel Computation' from
+    Culler et al. published in July 1993 starts with the necessity of an
+    intermediate complex model for portable algorithms on massively parallel
+    processors. 
+    
+    To their mind the popular models (e.g. PRAM) are not applicable for real
+    algorithms. Therefore they created the LogP Model, which is based on the BSP-Model
+    from Valiant and has the following parameters:
+    
+    \begin{description}
+        \item[$L$] an upper bound on latency for point to point communication
+        \item[$o$] an overhead time for sending or recieving a message
+        \item[$g$] time interval between consecutive sending or recieving
+        \item[$P$] number of processors/memory modules
+    \end{description}
+    
+    Furthermore they assume a finite capacity ($\lceil L/g \rceil$) of the
+    network.
+
+    With this assumptions the authors derive optimized algorithms like a
+    broadcast, summation, FFT and LU decomposition. By matching the
+    model to real machines the authors explain that different network
+    types (Hypercube, Butterfly, 3D Torus, ...) differ in their average
+    distance only by a factor of maximal four, hence other factors like
+    send and recieve overhead dominate the network overhead.
+
+    The model's name means the model for communication time as an arbitrary
+    constant like $L = \log P$.
+
+    To our mind the model provides an accurate framework to develop portable
+    parallel algorithms, but because of it's generality it is not very accurate
+    . For example we know that a preposted recieve in MPI is much faster
+    than a postposted recieve, which contradicts to the constant overhead
+    in the LogP model.
 \end{itemize}
 
 
