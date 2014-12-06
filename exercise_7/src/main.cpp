@@ -1,0 +1,65 @@
+/*************************************************************************************************
+ *
+ * Heidelberg University - IntroHPC Exercise 07
+ *
+ * Group :          IntroHPC03
+ * Participant :    Klaus Naumann
+ *				    Christoph Klein
+ *                  Günther Schindler
+ *
+ * File :           main.cpp
+ *
+ * Purpose :        N-Body Simulation (3D)
+ *
+ *************************************************************************************************/
+#include <iostream>
+#include <cstdlib>
+#include <cmath>
+#include "../inc/nbody.hpp"
+using namespace std;
+
+const double dt		= 10;			// step-size
+const double iter	= 1000;			// number of iterations
+
+int main(int argc, char **argv) {
+
+  int nbodies;
+
+  /* get commandline parameters */
+  if (argc != 2) {
+    cout << "Wrong number of arguments!" << endl;
+    cout << "Usage: " << endl;
+    cout << "\t" << argv[0] << endl;
+    cout << "\t<N number of bodies>" << endl;
+    return EXIT_FAILURE;
+  }
+  else {
+    nbodies = atoi(argv[1]);
+  }
+
+  /* Initialize bodies */
+  sBody *bodys = initBody(nbodies, 10);
+
+  for(int i = 0; i < iter; i++) {
+    for(int m = 0; m < nbodies; m++) {
+      for(int n = 0; n < nbodies; n++) {
+        if(m != n) {
+            applyForce(&bodys[m], &bodys[n], dt);
+        }
+      }
+    }
+
+    for(int x = 0; x < nbodies; x++) {
+      newPos(&bodys[x], dt);
+      if(i%100 == 0) {
+        cout << "\n" << x << ". Body" << endl;
+        outBody(&bodys[x]);
+      }
+    }
+
+  }
+
+  return EXIT_SUCCESS;
+}
+
+
