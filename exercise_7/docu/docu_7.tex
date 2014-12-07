@@ -3,6 +3,7 @@
 
 % PACKAGES
 \usepackage[english]{babel}
+\usepackage{listings} % Required for insertion of code
 
 % TITLE
 \title{Exercise Sheet VII}
@@ -79,6 +80,36 @@
     than a postposted recieve, which contradicts to the constant overhead
     in the LogP model.
 \end{itemize}
-
-
+\section*{n-Body Problem - Partitioning / Communication Design}
+	To perform an n-Body simulation every body needs data from all bodies in the
+    simulation for calculation purposes. For the MPI implementation we need to 
+    define a MPI Datatyp and a communication pattern.
+    
+    \subsection*{Datatype}
+    As you can see in our sequential implementation we used a struct to store
+    the body data. The needed data is:
+    \begin{enumerate}
+    	\item mass
+        \item positions in x, y, z direction
+        \item velocity in x, y, z direction
+    \end{enumerate}
+    For the parallel MPI implementation we add the force in each direction to
+    the struct an define a MPI type.
+    Depending on the amount of bodies and the memory each process could store
+    the mass of every data, because compared the other data masses are static
+    and always required for the calculation.
+    
+    \subsection*{Communication}
+    We distribute the bodies between the processes to achieve symmetry for the
+    n-Body simulation. As an advantage of this we can use the ring construct for
+    communication. Every process \textit{P} only communicates with its neighbour
+    processes \textit{P - 1} and \textit{P + 1}, where process \textit{P} gets
+    data from \textit{P - 1} and sends data to \textit{P + 1} until all process
+    have received all data for calculating the positions and forces.
+    
+    \subsection*{Maximize Overlap}
+    To maximize the overlap between computation and communication we use 
+    non-blocking send/recv. By using Isend and Irecv the processes can communicate
+    while they calculate. 
+    
 \end{document}
