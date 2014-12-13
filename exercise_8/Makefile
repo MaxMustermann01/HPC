@@ -22,11 +22,14 @@ nbody :
 	$(CPP) $(CFLAGS)	src/main.cpp \
 						src/nbody.cpp \
                         src/communication.cpp \
+                        src/coordinate.cpp \
+                        src/time_measurement.c \
 						-o ./bin/nbody
 
 clean :
 	rm -f ./bin/nbody
 	rm -f  $(DOCUNAME).pdf $(DOCUNAME).log $(DOCUNAME).aux
+	rm -f ./output.bin    
 
 .PHONY: docu
 docu:

@@ -41,11 +41,13 @@ typedef struct sList {
 *                           assign 0.0 to velocity values
 *
 * Parameter:			    Integer:	amount of bodies
-*                           Integer:    max value for random-function
+*                           double:     maximum possible value for a coordinate
+*                           double:     minimum possible mass
+*                           double:     maximum possible mass
 *
 * Return:		            sBody*:     initiated body
 *************************************************************************************************/
-sBody* initBody(int, int);
+sBody* initBody(int, double, double, double);
 
 /*************************************************************************************************
 * Function description: 	Calculates new velocity for body 1

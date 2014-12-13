@@ -22,18 +22,20 @@ using namespace std;
 
 
 /* create new bodies */
-sBody* initBody(int nbodies, int max) {
+sBody* initBody(int nbodies, double maxCoord, double minMass, double maxMass) {
   
   // define the random number generator //
-  double dMax = max;
+  double dMax = maxCoord;
   double dMin = 0;
   uniform_real_distribution<double> unif(dMin, dMax);
   default_random_engine re; 
+  uniform_real_distribution<double> unif1(minMass, maxMass);
+  default_random_engine re1;
 
   sBody *bodys = new sBody[nbodies];
     
   for(int i = 0; i < nbodies; i++) {
-    bodys[i].dM =  unif(re) + 0.1 ; // to avoid mass of zero
+    bodys[i].dM =  unif1(re1);
     bodys[i].dPx = unif(re);
     bodys[i].dPy = unif(re);
     bodys[i].dPz = unif(re);
@@ -115,6 +117,9 @@ void syncPositions(sList list1, sList list2, int jobOffset, int jobSize) {
             list1.pB[i].dPx = list2.pB[i].dPx;
             list1.pB[i].dPy = list2.pB[i].dPy;
             list1.pB[i].dPz = list2.pB[i].dPz;
+            list1.pB[i].dVx = list2.pB[i].dVx;
+            list1.pB[i].dVy = list2.pB[i].dVy;
+            list1.pB[i].dVz = list2.pB[i].dVz;
         }
     }
 }
