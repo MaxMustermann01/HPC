@@ -47,8 +47,38 @@
     amount of integer-based/memory-sensitive applications.
 
     % SECOND REVIEW: MEMORY ACCESS PATTERNS OF HPC APPLICATIONS
-    \item text
+    \item
+    The paper 'On the Memory Access Patterns of Supercomputer Applications:
+    Benchmark Selection and Its Implications' from Murphy and Kogge published
+    in July 2007 discusses the different demands of real HPC applications in 
+    comparision to known HPC benchmarks.
+
+    The authors compare mainly a common benchmark suite (integer/floating-point based)
+    with real HPC applications (integer/floating-point based). They choose the
+    following metrics for comparison:
+    \begin{itemize}
+        \item \emph{Temporal locality:} metric for data reusage
+        \item \emph{Spatial locality:} amount of relatively cache hits
+        \item \emph{Data intensiveness:} amount of unique accessed data
+    \end{itemize}
+    The authors analyzed this metrics system independently for real
+    applications from Sandia National Laboratories and for common benchmark
+    suites from the System Performance Evaluation Cooperative (SPEC). Based on
+    the results the authors say that the SPEC benchmark suites differ enormously
+    in the choosen metrics for the floating-point and integer based benchmarks from the
+    real applications represented by Sandia benchmark suites. Especially the common
+    LINPACK benchmark does not seem to represent the demands of real applications
+    in any way. Even huge differences between Sandia and SPEC suites can be found
+    by estimating the data intensiveness, where Sandia suites have a much
+    higher data intensiveness than SPEC suites, which is crucial, as the number
+    of unique accessed items can affect the memory performance more than the 
+    store efficiency.
+
+    To our mind this paper provides scientific arguments for what was already
+    supposed: Many benchmarks do not represent the demands of a real application
+    and should therefore be choosen wisely (i.e. unrealistic LINPACK).
 \end{itemize}    
+
 % PART 2
 %%%%%%%%
 

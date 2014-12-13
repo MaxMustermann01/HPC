@@ -38,7 +38,7 @@ using namespace std;
 
 const double dt		= 0.01;			// step-size
 const double iter	= 100;			// number of iterations
-// plummer softening ¿ avoids large forces if particles are very close //
+// plummer softening - avoids large forces if particles are very close //
 const double softening = 0.001;
 
 
@@ -124,3 +124,5 @@ int main(int argc, char **argv) {
     MPI_Finalize();
     return EXIT_SUCCESS;
 }
+
+
