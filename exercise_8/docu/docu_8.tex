@@ -6,7 +6,7 @@
 \usepackage{listings} % Required for insertion of code
 
 % SETTINGS
-\input{lstsettings}
+\input{./docu/lstsettings}
 
 % TITLE
 \title{Exercise Sheet VIII}
@@ -18,7 +18,37 @@
 
 % PART 1
 %%%%%%%%
+\section*{Reviews}
+\begin{itemize}
+    % FIRST REVIEW: MEMORY SENSITIVITY OF HPC APPLICATIONS
+    \item
+    The paper 'On the Effects of Memory Latency and Bandwidth on
+    Supercomputer Application Performance' from Richard Murphy
+    published in 2007 discusses the memory sensitivity of two types
+    of high performance applications. There are traditional floating
+    point based applications, which solves mostly physical problems,
+    and emerging integer arithmetic based applications, which solve mostly
+    graph problems.
 
+    The author performed benchmarks for this two types of applications
+    on a parallel machine simulator and measured the average instructions
+    per clock cycle in dependency of the memory latency and bandwidth. Based
+    on the results for the choosen benchmarks he says that both types of
+    applications are rather latency than bandwidth sensitive. Furthermore
+    the integer based applications were generally more memory 
+    sensitive.
+
+    To our mind this paper shows the divergence between HPC-architectures,
+    which are optimized for traditional floating point operations, and the
+    emerging amount of integer/tree based applications. But the author
+    does not give constructive suggestions to solve this divergence. Furthermore
+    one should keep in mind that the measurements were not done on a real HPC-system.
+    This paper looks like an appeal at HPC-architects to consider the emerging
+    amount of integer-based/memory-sensitive applications.
+
+    % SECOND REVIEW: MEMORY ACCESS PATTERNS OF HPC APPLICATIONS
+    \item text
+\end{itemize}    
 % PART 2
 %%%%%%%%
 
