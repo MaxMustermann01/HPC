@@ -1,6 +1,6 @@
 /*************************************************************************************************
  *
- * Heidelberg University - IntroHPC Exercise 07
+ * Heidelberg University - IntroHPC Exercise 08
  *
  * Group :          IntroHPC03
  * Participant :    Klaus Naumann
@@ -16,50 +16,97 @@
 #include <cstdlib>
 #include <cmath>
 
-#include "nbody.hpp"
+#include "nbody.hpp" // body calculations
+#include "communication.hpp" // ring communication
+
 using namespace std;
 
 const double dt		= 0.01;			// step-size
-const double iter	= 1000;			// number of iterations
+const double iter	= 100;			// number of iterations
 const double softening = 0.001;     // plummer softening
+
 
 int main(int argc, char **argv) {
 
-  int nbodies;
+    int nbodies;
+    int rank, mpiSize;
 
-  /* get commandline parameters */
-  if (argc != 2) {
-    cout << "Wrong number of arguments!" << endl;
-    cout << "Usage: " << endl;
-    cout << "\t" << argv[0] << endl;
-    cout << "\t<N number of bodies>" << endl;
-    return EXIT_FAILURE;
-  }
-  else {
-    nbodies = atoi(argv[1]);
-  }
+    /* get commandline parameters */
+    if (argc != 2) {
+        cout << "Wrong number of arguments!" << endl;
+        cout << "Usage: " << endl;
+        cout << "\t" << argv[0] << endl;
+        cout << "\t<N number of bodies>" << endl;
+        return EXIT_FAILURE;
+    }
+    else {
+        nbodies = atoi(argv[1]);
+    }
+   
+   /***************************
+    * GET RANK, MPISIZE AND JOB
+    ***************************/
 
-  /* Initialize bodies */
-  sBody *bodys = initBody(nbodies, 10);
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &mpiSize);
+    
+    // job size //
+    int jobSize = nbodies / mpiSize;
+    if (rank < nbodies % mpiSize)
+        jobSize++;
 
-  for(int i = 0; i < iter; i++) {
-    for(int m = 0; m < nbodies - 1; m++) {
-      for(int n = m + 1; n < nbodies; n++) {
-        applyForce(&bodys[m], &bodys[n], dt, softening);
-      }
+    // job offset //        
+    int jobOffset = rank * (nbodies / mpiSize) + nbodies % mpiSize;
+    if (rank < nbodies % mpiSize)
+        jobOffset -= (nbodies % mpiSize - rank);
+    
+   /*****************************
+    * INITIALIZATION OF PARTICLES
+    *****************************/
+    sList list;
+    list.size = nbodies;
+    
+    // master process generates initial conditions //
+    if (rank == 0){
+        sBody *bodys = initBody(nbodies, 10);
+        list.pB = bodys;
+    }
+    // slaves just allocate memory //
+    else
+        list.pB = new sBody[nbodies];
+
+   /*******************************
+    * DISTRIBUTE INITIAL CONDITIONS
+    *******************************/
+
+    if (rank != 0)
+        list = getInitialConditions(nbodies, rank);
+    
+    if (rank < mpiSize - 1)
+        sendInitialConditions(list, rank, mpiSize);
+   
+
+   /*********************
+    * N-BODY CALCULATIONS
+    *********************/
+
+    for (int i = 0; i < iter; i++) {
+        calcPositions(list, jobOffset, jobSize, softening, dt); 
+        
+        // ring communication //
+        if (rank != 0)
+            recvAndSyncPositions(list, jobOffset, jobSize, rank, mpiSize);
+        if (mpiSize > 1) 
+            sendPositions(list, rank, mpiSize); 
+        if (rank < mpiSize - 1)
+            recvAndSyncPositions(list, jobOffset, jobSize, rank, mpiSize);
+        if (rank < mpiSize - 2)
+            sendPositions(list, rank, mpiSize); 
     }
 
-    for(int x = 0; x < nbodies; x++) {
-      newPos(&bodys[x], dt);
-      if(i%100 == 0) {
-        cout << "\n" << x << ". Body" << endl;
-        outBody(&bodys[x]);
-      }
-    }
-
-  }
-
-  return EXIT_SUCCESS;
+    MPI_Finalize();
+    return EXIT_SUCCESS;
 }
 
 

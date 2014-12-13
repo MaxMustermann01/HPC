@@ -14,13 +14,14 @@
 #*************************************************************************************************
 
 CPP = mpic++
-CFLAGS = -Wall
+CFLAGS = -Wall -std=c++0x
 CLATEX = pdflatex
 DOCUNAME = docu_8
 
 nbody :
 	$(CPP) $(CFLAGS)	src/main.cpp \
 						src/nbody.cpp \
+                        src/communication.cpp \
 						-o ./bin/nbody
 
 clean :

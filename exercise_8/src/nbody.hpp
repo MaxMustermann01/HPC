@@ -1,6 +1,6 @@
 /*************************************************************************************************
  *
- * Heidelberg University - IntroHPC Exercise 07
+ * Heidelberg University - IntroHPC Exercise 08
  *
  * Group :          IntroHPC03
  * Participant :    Klaus Naumann
@@ -15,8 +15,12 @@
 #ifndef NBODY_HPP
 #define NBODY_HPP
 
-#define G 0.00000000006673
+//#define G 0.00000000006673
+#define G 1.0
 
+// if you change this structure you have to
+// adjust the macro in communication.hpp for the
+// mpi datatype
 typedef struct sBody {
   double dM;		// mass
   double dPx;		// x-position
@@ -26,6 +30,11 @@ typedef struct sBody {
   double dVy;		// velocity in y-direction
   double dVz;       // velocity in z-direction
 } sBody;
+
+typedef struct sList {
+    int size;
+    sBody *pB;
+} sList;
 
 /*************************************************************************************************
 * Function description: 	allocates memory for body and assign random values to mass, position;
@@ -39,18 +48,7 @@ typedef struct sBody {
 sBody* initBody(int, int);
 
 /*************************************************************************************************
-* Function description: 	Calculates distance between two bodies (not used here)
-*
-* Parameter:			    sBody*:	    body 1
-*                           sBody*:     body 2
-*                           Double:
-*
-* Return:		            Double:     distance
-*************************************************************************************************/
-//double distance(double, double);
-
-/*************************************************************************************************
-* Function description: 	Calculates new velocity for body
+* Function description: 	Calculates new velocity for body 1
 *
 * Parameter:			    sBody*:	    body 1
 *                           sBody*:     body 2
@@ -80,4 +78,33 @@ void newPos(sBody *, double);
 *************************************************************************************************/
 void outBody(sBody *);
 
+/*************************************************************************************************
+* Function description: 	Calculates all the new positions for
+*                           particle[jobOffset] to particle[jobOffset + jobSize - 1]
+*
+* Parameter:			    sList:      body list
+*                           integer:    jobOffset
+*                           integer:    jobSize
+*                           double:     softening
+*                           double:     stepsize dt
+*
+* Return:		            Void
+*************************************************************************************************/
+void calcPositions(sList, int, int, double, double);
+
+/*************************************************************************************************
+* Function description: 	synchronizes the positions between list1 and
+*                           list2. In list1 every positions will be replaced
+*                           by the positions from list2 except the 
+*                           positions from particle[jobOffset] to
+*                           particle[jobOffset + jobSize - 1].
+*
+* Parameter:			    sList:      list1
+*                           sList:      list2
+*                           integer:    jobOffset
+*                           integer:    jobSize
+*
+* Return:		            Void
+*************************************************************************************************/
+void syncPositions(sList, sList, int, int);
 #endif

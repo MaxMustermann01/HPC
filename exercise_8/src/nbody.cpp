@@ -1,6 +1,6 @@
 /*************************************************************************************************
  *
- * Heidelberg University - IntroHPC Exercise 07
+ * Heidelberg University - IntroHPC Exercise 08
  *
  * Group :          IntroHPC03
  * Participant :    Klaus Naumann
@@ -15,6 +15,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
+#include <random>
 #include "stdio.h"
 #include "nbody.hpp"
 using namespace std;
@@ -22,14 +23,20 @@ using namespace std;
 
 /* create new bodies */
 sBody* initBody(int nbodies, int max) {
+  
+  // define the random number generator //
+  double dMax = max;
+  double dMin = 0;
+  uniform_real_distribution<double> unif(dMin, dMax);
+  default_random_engine re; 
 
   sBody *bodys = new sBody[nbodies];
-
+    
   for(int i = 0; i < nbodies; i++) {
-    bodys[i].dM = (double)(rand()%100);
-    bodys[i].dPx = (double)(rand()%max + 1);
-    bodys[i].dPy = (double)(rand()%max + 1);
-    bodys[i].dPz = (double)(rand()%max + 1);
+    bodys[i].dM =  unif(re) + 0.1 ; // to avoid mass of zero
+    bodys[i].dPx = unif(re);
+    bodys[i].dPy = unif(re);
+    bodys[i].dPz = unif(re);
     bodys[i].dVx = 0.0;
     bodys[i].dVy = 0.0;
     bodys[i].dVz = 0.0;
@@ -55,17 +62,9 @@ void applyForce(sBody *m1, sBody *m2, double dt, double softening) {
   double ay1 = Fy / m1->dM;
   double az1 = Fz / m1->dM;
 
-  double ax2 = - Fx / m2->dM;
-  double ay2 = - Fy / m2->dM;
-  double az2 = - Fz / m2->dM;
-
   m1->dVx += ax1 * dt;
   m1->dVy += ay1 * dt;
   m1->dVz += az1 * dt;
-
-  m2->dVx += ax2 * dt;
-  m2->dVy += ay2 * dt;
-  m2->dVz += az2 * dt;
 }
 
 
@@ -91,3 +90,31 @@ void outBody(sBody *body) {
    printf("====================================\n");
 }
 
+void calcPositions(sList list, int jobOffset, int jobSize, double softening, double dt) {
+
+    for (int i = jobOffset; i < jobOffset + jobSize; i++) {
+        for (int j = 0; j < list.size; j++) {
+            if (j != i)
+                applyForce(&list.pB[i], &list.pB[j], dt, softening); 
+        }
+    }
+
+    for (int i = jobOffset; i < jobOffset + jobSize; i++)
+        newPos(&list.pB[i], dt); 
+}
+
+void syncPositions(sList list1, sList list2, int jobOffset, int jobSize) {
+
+    if (list1.size != list2.size) {
+        cout << "***ERROR: syncPositions: lists have uneqal length" << endl;
+        return;
+    }
+
+    for (int i = 0; i < list1.size; i++) {
+        if (i < jobOffset || i >= jobOffset + jobSize) {
+            list1.pB[i].dPx = list2.pB[i].dPx;
+            list1.pB[i].dPy = list2.pB[i].dPy;
+            list1.pB[i].dPz = list2.pB[i].dPz;
+        }
+    }
+}
