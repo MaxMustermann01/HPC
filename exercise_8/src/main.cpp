@@ -12,6 +12,21 @@
  * Purpose :        N-Body Simulation (3D)
  *
  *************************************************************************************************/
+
+/***********************************************************************
+ * POSSIBLE OPTIMIZATIONS
+ *      - Replace macro in communication.hpp by adding
+ *        an additional function parameter, which defines
+ *        the used mpi datatype
+ *      - modify the ring communication that only necessary 
+ *        data is sent. At the moment every process sends
+ *        its whole particle list to the neighbor process
+ *      - add a function parameter to sendPositions, which
+ *        allows to use a blocking or non-blocking send. This
+ *        non-blocking send can be used for the last 
+ *        send process in the for-loop in the topic N-BODY-CALCULATIONS.
+ ***********************************************************************/
+
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
@@ -23,7 +38,8 @@ using namespace std;
 
 const double dt		= 0.01;			// step-size
 const double iter	= 100;			// number of iterations
-const double softening = 0.001;     // plummer softening
+// plummer softening ¿ avoids large forces if particles are very close //
+const double softening = 0.001;
 
 
 int main(int argc, char **argv) {
@@ -102,11 +118,9 @@ int main(int argc, char **argv) {
         if (rank < mpiSize - 1)
             recvAndSyncPositions(list, jobOffset, jobSize, rank, mpiSize);
         if (rank < mpiSize - 2)
-            sendPositions(list, rank, mpiSize); 
+            sendPositions(list, rank, mpiSize); // here a non-blocking send is possible 
     }
 
     MPI_Finalize();
     return EXIT_SUCCESS;
 }
-
-
