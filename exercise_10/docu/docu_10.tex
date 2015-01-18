@@ -74,7 +74,9 @@ For large matrix sizes the time needed for copy processes is negligible.
 
 In figure \ref{fig:sh_speedup} you can see the speed up we achieved
 from the CPU blocked matrix multiplication to the GPU shared memory
-kernel with a blocksize of 729 threads. We think that the peaks are
+kernel with a blocksize of 729 threads. This sequential CPU matrix 
+multiplication is optimized for cache usage and therefore executes
+the matrix multiplication blockwise. We think that the peaks are
 at matrix widths, which are whole number multiples of the block width.
 The major trend of the graph is like linear (be aware of the log scale x-axis)
 function and seems to finish in a saturation. 
