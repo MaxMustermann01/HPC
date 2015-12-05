@@ -1,0 +1,150 @@
+%PREAMBLE
+%%%%%%%%%%
+%%%%%%%%%%
+
+\documentclass[DIV=12,oneside,a4paper]{scrartcl}
+
+% PACKAGES
+%%%%%%%%%%
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{pgf}
+\usepackage{listings}
+\usepackage{amsmath}
+
+% DOCUMENT
+%%%%%%%%%%
+%%%%%%%%%%
+
+\begin{document}
+
+% TITLE
+%%%%%%%
+
+\title{Exercise Sheet X}
+\author{Klaus Naumann, G\"unther Schindler \& Christoph Klein}
+\maketitle
+
+
+% PART 3
+%%%%%%%%
+\section{Matrix Multiply -- GPU version using shared memory}
+We implemented a matrix multiplication kernel with the
+use of shared memory. We choosed a matrix size of
+$4\cdot 10^{6}$ floating point and measured the kernel time
+(without copy processes between host and device) in dependency
+of the thread count per thread block. You can see our results
+in figure \ref{fig:sh_thread_count}. We see a linear decrease
+in calculation time until we reach a certain thread count per
+block about $70$. 
+
+To choose a reasonable thread count per block
+for further measurements we analyzed the occupancy of a streaming
+multiprocessor, which is the number of resident threads on the
+SM divided by the maximum possible number of resident threads.
+For the GeForce GTX 480 1536 resident threads per SM are possible.
+To determine the occupancy you have to consider the limiting 
+factors:
+\begin{itemize}
+    \item Maximal possible number of threads per SM (1536)
+    \item Maximal available registers per SM (32768)
+    \item Registers per thread (11)
+    \item Available shared memory per SM (49 kB)
+    \item Shared memory used by a thread block, which is
+        in our case equal to the squared number of threads
+        within a block times three (three matrices) 
+        times the size of a float (4 Byte)
+    \item The granularity of the threads, as they are
+        composed in blocks on the SM
+\end{itemize}
+With this considerations you can create the plot in figure
+\ref{fig:occupancy}. Generally a high number of threads per
+block should lead to good performance as more threads can
+reuse the data from the shared memory. Furthermore it should
+lead to good performance if we use as most shared memory as
+we can. 
+
+With this considerations and the shape of the graphs
+in figure \ref{fig:sh_thread_count} and \ref{fig:occupancy}
+we choose the reasonable thread count of 729 per block.
+
+With this thread count we variied the matrix size and measured
+the calculation time. You can see the result in figure \ref{fig:sh_size}.
+For large matrix sizes the time needed for copy processes is negligible.
+
+In figure \ref{fig:sh_speedup} you can see the speed up we achieved
+from the CPU blocked matrix multiplication to the GPU shared memory
+kernel with a blocksize of 729 threads. This sequential CPU matrix 
+multiplication is optimized for cache usage and therefore executes
+the matrix multiplication blockwise. We think that the peaks are
+at matrix widths, which are whole number multiples of the block width.
+The major trend of the graph is like linear (be aware of the log scale x-axis)
+function and seems to finish in a saturation. 
+
+Furthermore we plotted the speedup in dependency of the thread count
+per block in figure \ref{fig:thread_speedup}. 
+\begin{figure}
+    \begin{center}
+        \input{./src/plot/sh_thread_count.pgf}
+    \end{center}
+    \caption{Pure kernel time for a matrix size of $4\cdot 10^{6}$
+        floating point numbers using shared memory.}
+    \label{fig:sh_thread_count}
+\end{figure}
+
+\begin{figure}
+    \begin{center}
+        \input{./src/plot/occupancy.pgf}
+    \end{center}
+    \caption{Occupancy and shared memory usage for the shared memory
+        matrix multiplication kernel on the GeForce GTX 480.}
+    \label{fig:occupancy}
+\end{figure}
+
+\begin{figure}
+    \begin{center}
+        \input{./src/plot/sh_size.pgf}
+    \end{center}
+    \caption{Matrix multiplication time for the shared memory kernel
+        (blocksize = 729 threads)
+        with and without the time needed for copy processes between
+        host and device.}
+    \label{fig:sh_size}
+\end{figure}
+
+\begin{figure}
+    \begin{center}
+        \input{./src/plot/sh_speedup.pgf}
+    \end{center}
+    \caption{Speedup from CPU blocked matrix multiplication to 
+        GPU shared memory kernel with a blocksize of 729 threads.}
+    \label{fig:sh_speedup}
+\end{figure}
+
+\begin{figure}
+    \begin{center}
+        \input{./src/plot/thread_speedup.pgf}
+    \end{center}
+    \caption{Speedup from CPU blocked matrix multiplication to 
+        GPU shared memory kernel with a matrix of $4\cdot 10^{6}$
+        floating point numbers.}
+    \label{fig:thread_speedup}
+\end{figure}
+
+You can see our performance data in table \ref{table1}.
+As the peak performance of the GTX 480 is about 1345 GFLOP/s
+we do not reach it at all. We expect a higher performance
+if we increase the problem size, as at a problem size of 8100
+we start 12 thread blocks, although 26 are parallel executable
+(13 SMs and 2 blocks per SM are possible in this case).
+
+\begin{table}
+    \begin{center}
+    \input{./src/plot/table.tex}
+    \end{center}
+    \caption{Performance data with 729 threads per block.
+        The problem size means the total amount of floating
+        point numbers in the resulting matrix.}
+    \label{table1}
+\end{table}
+\end{document}
