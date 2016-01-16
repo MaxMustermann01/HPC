@@ -1,0 +1,1 @@
+/usr/bin/c++    -Wall -Wextra -std=c++11    CMakeFiles/test_buffer_3D.dir/test/test_buffer_3D.cpp.o  -o bin/test_buffer_3D -rdynamic -lmpich -lopa -lmpl -lrt -lcr -lpthread 
