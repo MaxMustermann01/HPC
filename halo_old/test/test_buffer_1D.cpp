@@ -31,11 +31,11 @@ int main(int argc, char** argv) {
   std::vector<int> iminus_r( k+i-1 );
   std::vector<int> iplus_r( k+i+1 );
 
-  tb.init_send_buffer<-1>(&iminus[0], MPI_INT, (k+i));
-  tb.init_send_buffer<1>(&iplus[0], MPI_INT, (k+i));
+  tb.init_send_buffer(&iminus[0], MPI_INT, (k+i), -1);
+  tb.init_send_buffer(&iplus[0], MPI_INT, (k+i), 1);
 
-  tb.init_recv_buffer<-1>(&iminus_r[0], MPI_INT, (k+i-1));
-  tb.init_recv_buffer<1>(&iplus_r[0], MPI_INT, (k+i+1));
+  tb.init_recv_buffer(&iminus_r[0], MPI_INT, (k+i-1), -1);
+  tb.init_recv_buffer(&iplus_r[0], MPI_INT, (k+i+1), 1);
 
   std::fill(&iminus[0], &iminus[k+i], pid);
   std::fill(&iplus[0], &iplus[k+i], pid);
@@ -47,8 +47,8 @@ int main(int argc, char** argv) {
   std::vector<int> res_iminus_r( k+i-1 );
   std::vector<int> res_iplus_r( k+i+1 );
 
-  std::fill(&res_iminus_r[0], &res_iminus_r[k+i-1], proc_grid.proc<-1>());
-  std::fill(&res_iplus_r[0], &res_iplus_r[k+i+1], proc_grid.proc<1>());
+  std::fill(&res_iminus_r[0], &res_iminus_r[k+i-1], proc_grid.proc(-1));
+  std::fill(&res_iplus_r[0], &res_iplus_r[k+i+1], proc_grid.proc(1));
 
   int res = 1;
   

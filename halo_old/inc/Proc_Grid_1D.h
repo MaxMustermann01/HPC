@@ -54,10 +54,10 @@ struct Proc_Grid_1D_t {
   /* Returns the process ID of the process with relative coordinates (X, Y) with
    * respect to the caller process.
    */
-  template <int Y>
-  int proc() const {
+  /*template <int Y>
+  int proc(int Y) const {
     return( proc(Y) );
-  }
+  }*/
   
   int proc(int Y) const {
     int coords[1], res;

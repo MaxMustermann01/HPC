@@ -47,10 +47,13 @@ class TransmitBuffer_1D {
     MPI_Request& operator()(int y) { return request[ y+1 ]; }
   };
   
-  template <int Y>
+  /*template <int Y>
   struct TAG {
     static const int value = Y+1;
-  };
+  };*/
+  int getTag(int Y) {
+    return Y+1;
+  }
 
 private:
   
@@ -61,34 +64,36 @@ private:
   request_t recv_request;
   
   /* method to perform a non-blocking receive */
-  template <int Y>
-  void Irecv(void) {
+  //template <int Y>
+  void Irecv(int Y) {
     MPI_Irecv(
       static_cast<char *>(m_recv_buffers.buffer(Y)),	// pointer to buffer
       m_recv_buffers.size(Y),				// buffer size (in byte)
       m_recv_buffers.datatype(),			// MPI datatype
-      m_proc_grid->template proc<Y>(),			// coordinates
-      TAG<-Y>::value,					// message tag
+      m_proc_grid->proc(Y),				// coordinates
+      //TAG<-Y>::value,					// message tag
+      getTag(Y),
       m_proc_grid->communicator(),			// MPI communicator
       &recv_request(-Y));
   }
   
   /* method to perform a non-blocking send */
-  template <int Y>
-  void Isend(void) {
+  //template <int Y>
+  void Isend(int Y) {
     MPI_Isend(
       static_cast<char *>(m_send_buffers.buffer(Y)),	// pointer to buffer
       m_send_buffers.size(Y),				// buffer size (in byte)
       m_send_buffers.datatype(),			// MPI datatype
-      m_proc_grid->template proc<Y>(),			// coordinates
-      TAG<Y>::value,					// message tag
+      m_proc_grid->proc(Y),				// coordinates
+      //TAG<Y>::value,					// message tag
+      getTag(Y),
       m_proc_grid->communicator(),			// MPI communicator
       &send_request(Y));
   }
   
   /* Perform a simple MPI-Wait */
-  template <int Y>
-  void wait(void) {
+  //template <int Y>
+  void wait(int Y) {
     MPI_Status status;
     MPI_Wait(&recv_request(-Y), &status);
   }
@@ -101,10 +106,10 @@ public:
   /* Default constructor */
   TransmitBuffer_1D() { }
   
-  template <int Y>
+  /*template <int Y>
   void init_send_buffer( void *p, MPI_Datatype const &DT, int s ){
     init_send_buffer(p, DT, s, Y);
-  }
+  }*/
   
   void init_send_buffer( void *p, MPI_Datatype const &DT, int s, int Y ) {
     m_send_buffers.buffer(Y) = reinterpret_cast<char *>(p);
@@ -112,10 +117,10 @@ public:
     m_send_buffers.size(Y) = s;
   }
   
-  template <int Y>
+  /*template <int Y>
   void init_recv_buffer( void *p, MPI_Datatype const &DT, int s) {
     init_recv_buffer(p, DT, s, Y);
-  }
+  }*/
   
   void init_recv_buffer( void *p, MPI_Datatype const &DT, int s, int Y) {
     m_recv_buffers.buffer(Y) = reinterpret_cast<char *>(p);
@@ -125,34 +130,34 @@ public:
   
   void do_receives() {
     /* Posting receives */
-    if (m_proc_grid->template proc<1>()!=-1) {
-      Irecv<1>();
+    if (m_proc_grid->proc(1)!=-1) {
+      Irecv(1);
     }
 
-    if (m_proc_grid->template proc<-1>()!=-1) {
-      Irecv<-1>();
+    if (m_proc_grid->proc(-1)!=-1) {
+      Irecv(-1);
     }
   }
   
   void do_sends(void) {
     /* Sending data */
-    if (m_proc_grid->template proc<-1>()!=-1) {
-      Isend<-1>();
+    if (m_proc_grid->proc(-1)!=-1) {
+      Isend(-1);
     }
 
-    if (m_proc_grid->template proc<1>()!=-1) {
-      Isend<1>();
+    if (m_proc_grid->proc(1)!=-1) {
+      Isend(1);
     }
   }
   
   void do_waits() {
     /* Actual receives */
-    if (m_proc_grid->template proc<1>()!=-1) {
-      wait<1>();
+    if (m_proc_grid->proc(1)!=-1) {
+      wait(1);
     }
 
-    if (m_proc_grid->template proc<-1>()!=-1) {
-      wait<-1>();
+    if (m_proc_grid->proc(-1)!=-1) {
+      wait(-1);
     }
   }
   
