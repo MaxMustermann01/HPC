@@ -97,35 +97,23 @@ public:
   
   void do_receives() {
     /* Posting receives */
-    if (m_proc_grid.proc(1)!=-1) {
-      Irecv(1);
-    }
-
-    if (m_proc_grid.proc(-1)!=-1) {
-      Irecv(-1);
-    }
+    for(auto i=-1; i<1; i++)
+      if (i!=0 && m_proc_grid.proc(i)!=-1)
+        Irecv(1);
   }
   
   void do_sends(void) {
     /* Sending data */
-    if (m_proc_grid.proc(-1)!=-1) {
-      Isend(-1);
-    }
-
-    if (m_proc_grid.proc(1)!=-1) {
-      Isend(1);
-    }
+    for(auto i=-1; i<1; i++)
+      if (i!=0 && m_proc_grid.proc(i)!=-1)
+        Isend(i);
   }
   
   void do_waits() {
     /* Actual receives */
-    if (m_proc_grid.proc(1)!=-1) {
-      wait(1);
-    }
-
-    if (m_proc_grid.proc(-1)!=-1) {
-      wait(-1);
-    }
+    for(auto i=-1; i<1; i++)
+      if (i!=0 && m_proc_grid.proc(i)!=-1)
+        wait(i);
   }
   
   void getdims(int &t_R) const {
