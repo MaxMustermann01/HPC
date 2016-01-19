@@ -5,30 +5,15 @@
 #include <mpi.h>
 
 template <int DIMS>
-struct Proc_Grid_t {
-  //static const int ndims = 1;	// Number of dimensions
+class Proc_Grid {
+private:
   MPI_Comm m_communicator;
   int R, C, Z;
   int r, c, z;
   int pid;
   
-  /* Constructor that takes an MPI_Cart communicator, already configured and use it
-   * to set up the process grid.
-   */
-  Proc_Grid_t(MPI_Comm& _communicator) : m_communicator(_communicator) {
-    create();
-  }
-  
-  /* Default constructor */
-  Proc_Grid_t() { }
-  
-  /* Returns communicator */
-  MPI_Comm communicator() const {
-    return m_communicator;
-  }
-
   /* Function to create the grid, internally */
-  void create(void) {
+  void create() {
     int dims[DIMS], periods[DIMS], coords[DIMS];
     std::fill(&dims[0], &dims[DIMS], 0);
     std::fill(&periods[0], &periods[DIMS], 1);
@@ -47,37 +32,95 @@ struct Proc_Grid_t {
       Z = dims[2];
       z = coords[2];
     }
+}
+  
+public:
+  /* Constructor that takes an MPI_Cart communicator, already configured and use it
+   * to set up the process grid.
+   */
+  Proc_Grid(MPI_Comm& _communicator) : m_communicator(_communicator) {
+    create();
+  }
+  
+  /* Default constructor */
+  Proc_Grid() { }
+  
+  /* Returns communicator */
+  MPI_Comm communicator() const {
+    return m_communicator;
   }
   
   void dims(int &t_R) const {
     t_R = R;
   }
+
+  void dims(int &t_R, int &t_C) const {
+    t_R = R;
+    t_C = C;
+  }
+
+  void dims(int &t_R, int &t_C, int &t_Z) const {
+    t_R = R;
+    t_C = C;
+    t_Z = Z;
+  }
   
   void coords(int &t_R) const {
     t_R = r;
   }
-  
-  int size(void) const {
-    return R;
+
+  void coords(int &t_R, int &t_C) const {
+    t_R = r;
+    t_C = c;
   }
-  
-  int getPID(void) const {
-    return pid;
+
+  void coords(int &t_R, int &t_C, int &t_Z) const {
+    t_R = r;
+    t_C = c;
+    t_Z = z;
   }
   
   /* Returns the process ID of the process with relative coordinates (X, Y) with
    * respect to the caller process.
    */
-  /*template <int Y>
-  int proc(int Y) const {
-    return( proc(Y) );
-  }*/
-  
   int proc(int Y) const {
     int coords[1], res;
     
     coords[0] = r + Y;
     if( coords[0] < 0 || coords[0] >= R )
+      return -1;
+    
+    MPI_Cart_rank( m_communicator, coords, &res );
+    return res;
+  }
+
+  int proc(int X, int Y) const {
+    int coords[2], res;
+  
+    coords[0] = r + X;
+    if( coords[0] < 0 || coords[0] >= R )
+      return -1;
+    
+    coords[1] = c + Y;
+    if( coords[1] < 0 || coords[1] >= C )
+      return -1;
+    
+    MPI_Cart_rank( m_communicator, coords, &res );
+    return res;
+  }
+  
+  int proc(int X, int Y, int Z) const {
+    int coords[3], res;
+   
+    coords[0] = r + X;
+    if( coords[0] < 0 || coords[0] >= R )
+      return -1;
+    
+    coords[1] = c + Y;
+    if( coords[1] < 0 || coords[1] >= C )
+      return -1;
+    coords[2] = z + Z;
+    if(coords[2] < 0 || coords[2] >= Z )
       return -1;
     
     MPI_Cart_rank( m_communicator, coords, &res );
