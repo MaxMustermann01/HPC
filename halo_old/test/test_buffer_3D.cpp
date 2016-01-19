@@ -70,35 +70,35 @@ int main(int argc, char** argv) {
 
   /* Data structures to store the received data */
   /* Direct neighbours */
-  std::vector<int> kplus_r( t+i+j+k );
-  std::vector<int> kminus_r ( t+i+j+k );
-  std::vector<int> iplus_r( t+i+j+k );
-  std::vector<int> iminus_r( t+i+j+k );
-  std::vector<int> jplus_r( t+i+j+k );
-  std::vector<int> jminus_r( t+i+j+k );
+  std::vector<int> kplus_r( t+i+j+k+1 );
+  std::vector<int> kminus_r ( t+i+j+k-1 );
+  std::vector<int> iplus_r( t+i+j+k+1 );
+  std::vector<int> iminus_r( t+i+j+k-1 );
+  std::vector<int> jplus_r( t+i+j+k+1 );
+  std::vector<int> jminus_r( t+i+j+k-1 );
   /* Rest of the k=-1 plane */
-  std::vector<int> iplusjpluskminus_r( t+i+j+k );
+  std::vector<int> iplusjpluskminus_r( t+i+j+k+1 );
   std::vector<int> jpluskminus_r( t+i+j+k );
-  std::vector<int> iminusjpluskminus_r( t+i+j+k );
+  std::vector<int> iminusjpluskminus_r( t+i+j+k-1 );
   std::vector<int> ipluskminus_r( t+i+j+k );
-  std::vector<int> iminuskminus_r( t+i+j+k );
-  std::vector<int> iplusjminuskminus_r( t+i+j+k );
-  std::vector<int> jminuskminus_r( t+i+j+k );
-  std::vector<int> iminusjminuskminus_r( t+i+j+k );
+  std::vector<int> iminuskminus_r( t+i+j+k-2 );
+  std::vector<int> iplusjminuskminus_r( t+i+j+k-1 );
+  std::vector<int> jminuskminus_r( t+i+j+k-2 );
+  std::vector<int> iminusjminuskminus_r( t+i+j+k-3 );
   /* Rest of the k=0 plane */
-  std::vector<int> iplusjplus_r( t+i+j+k );
+  std::vector<int> iplusjplus_r( t+i+j+k+2 );
   std::vector<int> iminusjplus_r( t+i+j+k );
   std::vector<int> iplusjminus_r( t+i+j+k );
-  std::vector<int> iminusjminus_r( t+i+j+k );
+  std::vector<int> iminusjminus_r( t+i+j+k-2 );
   /* Rest of the k=1 plane */
-  std::vector<int> iplusjpluskplus_r( t+i+j+k );
-  std::vector<int> jpluskplus_r( t+i+j+k );
-  std::vector<int> iminusjpluskplus_r( t+i+j+k );
-  std::vector<int> ipluskplus_r( t+i+j+k );
+  std::vector<int> iplusjpluskplus_r( t+i+j+k+3 );
+  std::vector<int> jpluskplus_r( t+i+j+k+2 );
+  std::vector<int> iminusjpluskplus_r( t+i+j+k+1 );
+  std::vector<int> ipluskplus_r( t+i+j+k+2 );
   std::vector<int> iminuskplus_r( t+i+j+k );
-  std::vector<int> iplusjminuskplus_r( t+i+j+k );
+  std::vector<int> iplusjminuskplus_r( t+i+j+k+1 );
   std::vector<int> jminuskplus_r( t+i+j+k );
-  std::vector<int> iminusjminuskplus_r( t+i+j+k );
+  std::vector<int> iminusjminuskplus_r( t+i+j+k-1 );
   
 //   std::vector<int> iminus_r( t+i+j-1 );
 //   std::vector<int> iplus_r( t+i+j+1 );
