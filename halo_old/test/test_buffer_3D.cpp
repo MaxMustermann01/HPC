@@ -263,81 +263,107 @@ int main(int argc, char** argv) {
   
   if (i>0) {
     res &= std::equal(&iminus_r[0], &iminus_r[t+i+j+k-1], &res_iminus_r[0]);
+    std::cout << "\nProc[" << pid << "] : res = " << res;
   }
   if (i<N-1) {
     res &= std::equal(&iplus_r[0], &iplus_r[t+i+j+k+1], &res_iplus_r[0]);
+    std::cout << "\nProc[" << pid << "] : res = " << res;
   }
   if (j>0) {
     res &= std::equal(&jminus_r[0], &jminus_r[t+i+j+k-1], &res_jminus_r[0]);
+    std::cout << "\nProc[" << pid << "] : res = " << res;
   }
   if (j<M-1) {
     res &= std::equal(&jplus_r[0], &jplus_r[t+i+j+k+1], &res_jplus_r[0]);
+    std::cout << "\nProc[" << pid << "] : res = " << res;
   }
   if (k>0) {
     res &= std::equal(&kplus_r[0], &kplus_r[t+i+j+k+1], &res_kplus_r[0]);
+    std::cout << "\nProc[" << pid << "] : res = " << res;
   }
   if (k <O-1) {
     res &= std::equal(&kminus_r[0], &kminus_r[t+i+j+k-1], &res_kminus_r[0]);
+    std::cout << "\nProc[" << pid << "] : res = " << res;
   }
   if (i>0 && j>0) {
     res &= std::equal(&iminusjminus_r[0], &iminusjminus_r[t+i+j+k-2], &res_iminusjminus_r[0]);
+    std::cout << "\nProc[" << pid << "] : res = " << res;
   }
   if (i<N-1 && j>0) {
     res &= std::equal(&iplusjminus_r[0], &iplusjminus_r[t+i+j+k], &res_iplusjminus_r[0]);
+    std::cout << "\nProc[" << pid << "] : res = " << res;
   }
   if (i>0 && j<M-1) {
     res &= std::equal(&iminusjplus_r[0], &iminusjplus_r[t+i+j+k], &res_iminusjplus_r[0]);
+    std::cout << "\nProc[" << pid << "] : res = " << res;
   }
   if (i<N-1 && j<M-1) {
     res &= std::equal(&iplusjplus_r[0], &iplusjplus_r[t+i+j+k+2], &res_iplusjplus_r[0]);
+    std::cout << "\nProc[" << pid << "] : res = " << res;
   }
   if (i > 0 && k > 0) {
     res &= std::equal(&iminuskminus_r[0], &iminuskminus_r[t+i+j+k-2], &res_iminuskminus_r[0]);
+    std::cout << "\nProc[" << pid << "] : res = " << res;
   }
   if (i<N-1 && k > 0) {
     res &= std::equal(&ipluskminus_r[0], &ipluskminus_r[t+i+j+k], &res_ipluskminus_r[0]);
+    std::cout << "\nProc[" << pid << "] : res = " << res;
   }
   if (i > 0 && k < O-1) {
     res &= std::equal(&iminuskplus_r[0], &iminuskplus_r[t+i+j+k], &res_iminuskplus_r[0]);
+    std::cout << "\nProc[" << pid << "] : res = " << res;
   }
   if(i < N-1 && k < O-1) {
     res &= std::equal(&ipluskplus_r[0], &ipluskplus_r[t+i+j+k+2], &res_ipluskplus_r[0]);
+    std::cout << "\nProc[" << pid << "] : res = " << res;
   }
   if (j > 0 && k > 0) {
     res &= std::equal(&jminuskminus_r[0], &jminuskminus_r[t+i+j+k-2], &res_iminuskminus_r[0]);
+    std::cout << "\nProc[" << pid << "] : res = " << res;
   }
   if (j < M-1 && k > 0) {
     res &= std::equal(&jpluskminus_r[0], &jpluskminus_r[t+i+j+k], &res_jpluskminus_r[0]);
+    std::cout << "\nProc[" << pid << "] : res = " << res;
   }
   if(j > 0 && k < O-1) {
     res &= std::equal(&jminuskplus_r[0], &jminuskplus_r[t+i+j+k], &res_jminuskplus_r[0]);
+    std::cout << "\nProc[" << pid << "] : res = " << res;
   }
   if(j < M-1 && k < O-1) {
     res &= std::equal(&jpluskplus_r[0], &jpluskplus_r[t+i+j+k+2], &res_jpluskplus_r[0]);
+    std::cout << "\nProc[" << pid << "] : res = " << res;
   }
   if(i > 0 && j > 0 && k > 0) {
     res &= std::equal(&iminusjminuskminus_r[0], &iminusjminuskminus_r[t+i+j+k-3], &res_iminusjminuskminus_r[0]);
+    std::cout << "\nProc[" << pid << "] : res = " << res;
   }
   if(i < N-1 && j > 0 && k > 0) {
     res &= std::equal(&iplusjminuskminus_r[0], &iplusjminuskminus_r[t+i+j+k-1], &res_iplusjminuskminus_r[0]);
+    std::cout << "\nProc[" << pid << "] : res = " << res;
   }
   if(i > 0 && j < M-1 && k > 0) {
     res &= std::equal(&iminusjpluskminus_r[0], &iminusjpluskminus_r[t+i+j+k-1], &res_iminusjpluskminus_r[0]);
+    std::cout << "\nProc[" << pid << "] : res = " << res;
   }
   if(i < N-1 && j < M-1 && k > 0) {
     res &= std::equal(&iplusjpluskminus_r[0], &iplusjpluskminus_r[t+i+j+k+1], &res_iplusjpluskminus_r[0]);
+    std::cout << "\nProc[" << pid << "] : res = " << res;
   }
   if(i > 0 && j > 0 && k < O-1) {
     res &= std::equal(&iminusjminuskplus_r[0], &iminusjminuskplus_r[t+i+j+k-1], &res_iminusjminuskplus_r[0]);
+    std::cout << "\nProc[" << pid << "] : res = " << res;
   }
   if(i < N-1 && j > 0 && k < O-1) {
     res &= std::equal(&iplusjminuskplus_r[0], &iplusjminuskplus_r[t+i+j+k+1], &res_iplusjminuskplus_r[0]);
+    std::cout << "\nProc[" << pid << "] : res = " << res;
   }
   if(i > 0 && j < M-1 && k < O-1) {
     res &= std::equal(&iminusjpluskplus_r[0], &iminusjpluskplus_r[t+i+j+k+1], &res_iminusjpluskplus_r[0]);
+    std::cout << "\nProc[" << pid << "] : res = " << res;
   }
   if(i < N-1 && j < M-1 && k < O-1) {
     res &= std::equal(&iplusjpluskplus_r[0], &iplusjpluskplus_r[t+i+j+k+3], &res_iplusjpluskplus_r[0]);
+    std::cout << "\nProc[" << pid << "] : res = " << res;
   }
   
   int final;
