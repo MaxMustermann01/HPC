@@ -231,48 +231,78 @@ public:
   
   void do_receives() {
   /* Posting receives */
-    for (auto i=-1; i<=1; i++)
-      if (i!=0 && m_proc_grid.proc(i)!=-1 && DIMS == 1)
-        Irecv(i);
-      else
-        for (auto j=-1; j<=1; j++)
-          if ((i!=0 || j!=0) && m_proc_grid.proc(i, j)!=-1 && DIMS == 2)
-            Irecv(i, j);
-          else
-            for (auto k=-1; k<=1; k++)
-              if ((i!=0 || j!=0 || k!=0) && m_proc_grid.proc(i, j, k)!=-1 && DIMS == 3)
-                Irecv(i, j, k);
-}
+  for (auto i=-1; i<=1; i++) {
+      if (DIMS == 1) {
+        if (i!=0 && m_proc_grid.proc(i)!=-1)
+          Irecv(i);
+      }
+      else {
+        for (auto j=-1; j<=1; j++) {
+          if (DIMS == 2) {
+            if ((i!=0 || j!=0) && m_proc_grid.proc(i, j)!=-1)
+              Irecv(i, j);
+          }
+          else {
+            if (DIMS == 3) {
+              for (auto k=-1; k<=1; k++)
+                if ((i!=0 || j!=0 || k!=0) && m_proc_grid.proc(i, j, k)!=-1)
+                  Irecv(i, j, k);
+            }
+          }
+        }
+      }
+    }
+  }
   
   void do_sends(void) {
     /* Sending data */
-    for (auto i=-1; i<=1; i++)
-      if (i!=0 && m_proc_grid.proc(i)!=-1 && DIMS == 1)
-        Isend(i);
-      else
-        for (auto j=-1; j<=1; j++)
-          if ((i!=0 || j!=0) && m_proc_grid.proc(i, j)!=-1 && DIMS == 2)
-            Isend(i, j);
-          else
-            for (auto k=-1; k<=1; k++)
-              if ((i!=0 || j!=0 || k!=0) && m_proc_grid.proc(i, j, k)!=-1 && DIMS == 3)
-                Isend(i, j, k);
-}
+    for (auto i=-1; i<=1; i++) {
+      if (DIMS == 1) {
+        if (i!=0 && m_proc_grid.proc(i)!=-1)
+          Isend(i);
+      }
+      else {
+        for (auto j=-1; j<=1; j++) {
+          if (DIMS == 2) {
+            if ((i!=0 || j!=0) && m_proc_grid.proc(i, j)!=-1)
+              Isend(i, j);
+          }
+          else {
+            if (DIMS == 3) {
+              for (auto k=-1; k<=1; k++)
+                if ((i!=0 || j!=0 || k!=0) && m_proc_grid.proc(i, j, k)!=-1)
+                  Isend(i, j, k);
+            }
+          }
+        }
+      }
+    }
+  }
   
   void do_waits() {
     /* Actual receives */
-    for (auto i=-1; i<=1; i++)
-      if (i!=0 && m_proc_grid.proc(i)!=-1 && DIMS == 1)
-        wait(i);
-      else
-        for (auto j=-1; j<=1; j++)
-          if ((i!=0 || j!=0) && m_proc_grid.proc(i, j)!=-1 && DIMS == 2)
-            wait(i, j);
-          else
-            for (auto k=-1; k<=1; k++)
-              if ((i!=0 || j!=0 || k!=0) && m_proc_grid.proc(i, j, k)!=-1 && DIMS == 3)
-                wait(i, j, k);
-}
+    for (auto i=-1; i<=1; i++) {
+      if (DIMS == 1) {
+        if (i!=0 && m_proc_grid.proc(i)!=-1)
+          wait(i);
+      }
+      else {
+        for (auto j=-1; j<=1; j++) {
+          if (DIMS == 2) {
+            if ((i!=0 || j!=0) && m_proc_grid.proc(i, j)!=-1)
+              wait(i, j);
+          }
+          else {
+            if (DIMS == 3) {
+              for (auto k=-1; k<=1; k++)
+                if ((i!=0 || j!=0 || k!=0) && m_proc_grid.proc(i, j, k)!=-1)
+                  wait(i, j, k);
+            }
+          }
+        }
+      }
+    }
+  }
   
   void getdims(int &t_R) const {
     m_proc_grid.dims(t_R);

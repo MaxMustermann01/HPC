@@ -24,7 +24,7 @@ private:
     
     R = dims[0];
     r = coords[0];
-    if (DIMS == 2 || DIMS == 3) { 
+    if (DIMS == 2 || DIMS == 3) {
       C = dims[1];
       c = coords[1];
     }
@@ -78,6 +78,10 @@ public:
     t_R = r;
     t_C = c;
     t_Z = z;
+  }
+  
+  int getprocid() {
+    return pid;
   }
   
   /* Returns the process ID of the process with relative coordinates (X, Y) with
