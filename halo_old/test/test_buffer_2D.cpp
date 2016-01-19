@@ -17,7 +17,7 @@ int main(int argc, char** argv) {
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
   MPI_Dims_create(nprocs, 2, dims);
   MPI_Cart_create(MPI_COMM_WORLD, 2, dims, period, false, &CartComm);
-  
+  /*bla*/
   TransmitBuffer<2> tb(CartComm);
   
   tb.getcoords(i, j);
