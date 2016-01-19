@@ -56,17 +56,6 @@ int main(int argc, char** argv) {
   std::vector<int> iplusjminuskplus( t+i+j+k );
   std::vector<int> jminuskplus( t+i+j+k );
   std::vector<int> iminusjminuskplus( t+i+j+k );
-  
-  /*
-  std::vector<int> iminus( t+i+j );
-  std::vector<int> iplus( t+i+j );
-  std::vector<int> jminus( t+i+j );
-  std::vector<int> jplus( t+i+j );
-  std::vector<int> iminusjminus( t+i+j );
-  std::vector<int> iplusjminus( t+i+j );
-  std::vector<int> iminusjplus( t+i+j );
-  std::vector<int> iplusjplus( t+i+j );
-  */
 
   /* Data structures to store the received data */
   /* Direct neighbours */
@@ -99,15 +88,6 @@ int main(int argc, char** argv) {
   std::vector<int> iplusjminuskplus_r( t+i+j+k+1 );
   std::vector<int> jminuskplus_r( t+i+j+k );
   std::vector<int> iminusjminuskplus_r( t+i+j+k-1 );
-  
-//   std::vector<int> iminus_r( t+i+j-1 );
-//   std::vector<int> iplus_r( t+i+j+1 );
-//   std::vector<int> jminus_r( t+i+j-1 );
-//   std::vector<int> jplus_r( t+i+j+1 );
-//   std::vector<int> iminusjminus_r( t+i+j-2 );
-//   std::vector<int> iplusjminus_r( t+i+j );
-//   std::vector<int> iminusjplus_r( t+i+j );
-//   std::vector<int> iplusjplus_r( t+i+j+2 );
   
   /*Initializing send buffers */
   /*Direct neighbours */
@@ -145,7 +125,7 @@ int main(int argc, char** argv) {
   tb.init_send_buffer( &iminusjminuskplus[0], MPI_INT, ( t+i+j+k ), -1,-1,1);
 
   /* Initializing receive buffers */
-    /*Direct neighbours */
+  /*Direct neighbours */
   tb.init_recv_buffer(&kplus_r[0], MPI_INT, ( t+i+j+k+1 ), 0,0,1);
   tb.init_recv_buffer(&kminus_r[0], MPI_INT, ( t+i+j+k-1 ), 0,0,-1);
   tb.init_recv_buffer(&iplus_r[0], MPI_INT, ( t+i+j+k+1 ), 1,0,0);
@@ -247,78 +227,60 @@ int main(int argc, char** argv) {
   std::vector<int> res_jminuskplus_r( t+i+j+k );
   std::vector<int> res_iminusjminuskplus_r( t+i+j+k-1 );
   
-//   std::vector<int> res_iminus_r( t+i+j-1 );
-//   std::vector<int> res_iplus_r( t+i+j+1 );
-//   std::vector<int> res_jminus_r( t+i+j-1 );
-//   std::vector<int> res_jplus_r( t+i+j+1 );
-//   std::vector<int> res_iminusjminus_r( t+i+j-2 );
-//   std::vector<int> res_iplusjminus_r( t+i+j );
-//   std::vector<int> res_iminusjplus_r( t+i+j );
-//   std::vector<int> res_iplusjplus_r( t+i+j+2 );
-  
   /* Fill the reference receive buffers with the expected process id */
   /* Direct neighbours */
-  std::fill(&res_kplus_r[0], &res_kplus_r[ t+i+j+k ], tb.getprocid(0,0,1));
-  std::fill(&res_kminus_r[0], &res_kminus_r[t+i+j+k], tb.getprocid(0,0,-1));
-  std::fill(&res_iplus_r[0], &res_iplus_r[t+i+j+k], tb.getprocid(1,0,0));
-  std::fill(&res_iminus_r[0], &res_iminus_r[t+i+j+k], tb.getprocid(-1,0,0));
-  std::fill(&res_jplus_r[0], &res_jplus_r[t+i+j+k], tb.getprocid(0,1,0));
-  std::fill(&res_jminus_r[0], &res_jminus_r[t+i+j+k], tb.getprocid(0,-1,0));
+  std::fill(&res_kplus_r[0], &res_kplus_r[ t+i+j+k+1 ], tb.getprocid(0,0,1));
+  std::fill(&res_kminus_r[0], &res_kminus_r[t+i+j+k-1], tb.getprocid(0,0,-1));
+  std::fill(&res_iplus_r[0], &res_iplus_r[t+i+j+k+1], tb.getprocid(1,0,0));
+  std::fill(&res_iminus_r[0], &res_iminus_r[t+i+j+k-1], tb.getprocid(-1,0,0));
+  std::fill(&res_jplus_r[0], &res_jplus_r[t+i+j+k+1], tb.getprocid(0,1,0));
+  std::fill(&res_jminus_r[0], &res_jminus_r[t+i+j+k-1], tb.getprocid(0,-1,0));
   /* Rest of the k=-1 plane */
-  std::fill(&res_iplusjpluskminus_r[0], &res_iplusjpluskminus_r[t+i+j+k], tb.getprocid(1,1,-1));
+  std::fill(&res_iplusjpluskminus_r[0], &res_iplusjpluskminus_r[t+i+j+k+1], tb.getprocid(1,1,-1));
   std::fill(&res_jpluskminus_r[0], &res_jpluskminus_r[t+i+j+k], tb.getprocid(0,1,-1));
-  std::fill(&res_iminusjpluskminus_r[0], &res_iminusjpluskminus_r[t+i+j+k], tb.getprocid(-1,1,-1));
+  std::fill(&res_iminusjpluskminus_r[0], &res_iminusjpluskminus_r[t+i+j+k-1], tb.getprocid(-1,1,-1));
   std::fill(&res_ipluskminus_r[0], &res_ipluskminus_r[t+i+j+k], tb.getprocid(1,0,-1));
-  std::fill(&res_iminuskminus_r[0], &res_iminuskminus_r[t+i+j+k], tb.getprocid(-1,0,-1));
-  std::fill(&res_iplusjminuskminus_r[0], &res_iplusjminuskminus_r[t+i+j+k], tb.getprocid(1,-1,-1));
-  std::fill(&res_jminuskminus_r[0], &res_jminuskminus_r[t+i+j+k], tb.getprocid(0,-1,-1));
-  std::fill(&res_iminusjminuskminus_r[0], &res_iminusjminuskminus_r[t+i+j+k], tb.getprocid(-1,-1,-1));
+  std::fill(&res_iminuskminus_r[0], &res_iminuskminus_r[t+i+j+k-2], tb.getprocid(-1,0,-1));
+  std::fill(&res_iplusjminuskminus_r[0], &res_iplusjminuskminus_r[t+i+j+k-1], tb.getprocid(1,-1,-1));
+  std::fill(&res_jminuskminus_r[0], &res_jminuskminus_r[t+i+j+k-2], tb.getprocid(0,-1,-1));
+  std::fill(&res_iminusjminuskminus_r[0], &res_iminusjminuskminus_r[t+i+j+k-3], tb.getprocid(-1,-1,-1));
   /* Rest of the k=0 plane */
-  std::fill(&res_iplusjplus_r[0], &res_iplusjplus_r[t+i+j+k], tb.getprocid(1,1,0));
+  std::fill(&res_iplusjplus_r[0], &res_iplusjplus_r[t+i+j+k+2], tb.getprocid(1,1,0));
   std::fill(&res_iminusjplus_r[0], &res_iminusjplus_r[t+i+j+k], tb.getprocid(-1,1,0));
   std::fill(&res_iplusjminus_r[0], &res_iplusjminus_r[t+i+j+k], tb.getprocid(1,-1,0));
-  std::fill(&res_iminusjminus_r[0], &res_iminusjminus_r[t+i+j+k], tb.getprocid(-1,-1,0));
+  std::fill(&res_iminusjminus_r[0], &res_iminusjminus_r[t+i+j+k-2], tb.getprocid(-1,-1,0));
   /* Rest of the k=1 plane */
-  std::fill(&res_iplusjpluskplus_r[0], &res_iplusjpluskplus_r[t+i+j+k], tb.getprocid(1,1,1));
-  std::fill(&res_jpluskplus_r[0], &res_jpluskplus_r[t+i+j+k], tb.getprocid(0,1,1));
-  std::fill(&res_iminusjpluskplus_r[0], &res_iminusjpluskplus_r[t+i+j+k], tb.getprocid(-1,1,1));
-  std::fill(&res_ipluskplus_r[0], &res_ipluskplus_r[t+i+j+k], tb.getprocid(1,0,1));
+  std::fill(&res_iplusjpluskplus_r[0], &res_iplusjpluskplus_r[t+i+j+k+3], tb.getprocid(1,1,1));
+  std::fill(&res_jpluskplus_r[0], &res_jpluskplus_r[t+i+j+k+2], tb.getprocid(0,1,1));
+  std::fill(&res_iminusjpluskplus_r[0], &res_iminusjpluskplus_r[t+i+j+k+1], tb.getprocid(-1,1,1));
+  std::fill(&res_ipluskplus_r[0], &res_ipluskplus_r[t+i+j+k+2], tb.getprocid(1,0,1));
   std::fill(&res_iminuskplus_r[0], &res_iminuskplus_r[t+i+j+k], tb.getprocid(-1,0,1));
-  std::fill(&res_iplusjminuskplus_r[0], &res_iplusjminuskplus_r[t+i+j+k], tb.getprocid(1,-1,1));
+  std::fill(&res_iplusjminuskplus_r[0], &res_iplusjminuskplus_r[t+i+j+k+1], tb.getprocid(1,-1,1));
   std::fill(&res_jminuskplus_r[0], &res_jminuskplus_r[t+i+j+k], tb.getprocid(0,-1,1));
-  std::fill(&res_iminusjminuskplus_r[0], &res_iminusjminuskplus_r[t+i+j+k], tb.getprocid(-1,-1,1));
-
-//   std::fill(&res_iminus_r[0], &res_iminus_r[t+i+j-1], proc_grid.proc<-1,0>());
-//   std::fill(&res_iplus_r[0], &res_iplus_r[t+i+j+1], proc_grid.proc<1,0>());
-//   std::fill(&res_jminus_r[0], &res_jminus_r[t+i+j-1], proc_grid.proc<0,-1>());
-//   std::fill(&res_jplus_r[0], &res_jplus_r[t+i+j+1], proc_grid.proc<0,1>());
-//   std::fill(&res_iminusjminus_r[0], &res_iminusjminus_r[t+i+j-2], proc_grid.proc<-1,-1>());
-//   std::fill(&res_iplusjplus_r[0], &res_iplusjplus_r[t+i+j+2], proc_grid.proc<1,1>());
-//   std::fill(&res_iplusjminus_r[0], &res_iplusjminus_r[t+i+j], proc_grid.proc<1,-1>());
-//   std::fill(&res_iminusjplus_r[0], &res_iminusjplus_r[t+i+j], proc_grid.proc<-1,1>());
+  std::fill(&res_iminusjminuskplus_r[0], &res_iminusjminuskplus_r[t+i+j+k-1], tb.getprocid(-1,-1,1));
 
   int res = 1;
   
   if (i>0) {
-    res &= std::equal(&iminus_r[0], &iminus_r[t+i+j+k], &res_iminus_r[0]);
+    res &= std::equal(&iminus_r[0], &iminus_r[t+i+j+k-1], &res_iminus_r[0]);
   }
   if (i<N-1) {
-    res &= std::equal(&iplus_r[0], &iplus_r[t+i+j+k], &res_iplus_r[0]);
+    res &= std::equal(&iplus_r[0], &iplus_r[t+i+j+k+1], &res_iplus_r[0]);
   }
   if (j>0) {
-    res &= std::equal(&jminus_r[0], &jminus_r[t+i+j+k], &res_jminus_r[0]);
+    res &= std::equal(&jminus_r[0], &jminus_r[t+i+j+k-1], &res_jminus_r[0]);
   }
   if (j<M-1) {
-    res &= std::equal(&jplus_r[0], &jplus_r[t+i+j+k], &res_jplus_r[0]);
+    res &= std::equal(&jplus_r[0], &jplus_r[t+i+j+k+1], &res_jplus_r[0]);
   }
   if (k>0) {
-    res &= std::equal(&kplus_r[0], &kplus_r[t+i+j+k], &res_kplus_r[0]);
+    res &= std::equal(&kplus_r[0], &kplus_r[t+i+j+k+1], &res_kplus_r[0]);
   }
   if (k <O-1) {
-    res &= std::equal(&kminus_r[0], &kminus_r[t+i+j+k], &res_kminus_r[0]);
+    res &= std::equal(&kminus_r[0], &kminus_r[t+i+j+k-1], &res_kminus_r[0]);
   }
   if (i>0 && j>0) {
-    res &= std::equal(&iminusjminus_r[0], &iminusjminus_r[t+i+j+k], &res_iminusjminus_r[0]);
+    res &= std::equal(&iminusjminus_r[0], &iminusjminus_r[t+i+j+k-2], &res_iminusjminus_r[0]);
   }
   if (i<N-1 && j>0) {
     res &= std::equal(&iplusjminus_r[0], &iplusjminus_r[t+i+j+k], &res_iplusjminus_r[0]);
@@ -327,10 +289,10 @@ int main(int argc, char** argv) {
     res &= std::equal(&iminusjplus_r[0], &iminusjplus_r[t+i+j+k], &res_iminusjplus_r[0]);
   }
   if (i<N-1 && j<M-1) {
-    res &= std::equal(&iplusjplus_r[0], &iplusjplus_r[t+i+j+k], &res_iplusjplus_r[0]);
+    res &= std::equal(&iplusjplus_r[0], &iplusjplus_r[t+i+j+k+2], &res_iplusjplus_r[0]);
   }
   if (i > 0 && k > 0) {
-    res &= std::equal(&iminuskminus_r[0], &iminuskminus_r[t+i+j+k], &res_iminuskminus_r[0]);
+    res &= std::equal(&iminuskminus_r[0], &iminuskminus_r[t+i+j+k-2], &res_iminuskminus_r[0]);
   }
   if (i<N-1 && k > 0) {
     res &= std::equal(&ipluskminus_r[0], &ipluskminus_r[t+i+j+k], &res_ipluskminus_r[0]);
@@ -339,10 +301,10 @@ int main(int argc, char** argv) {
     res &= std::equal(&iminuskplus_r[0], &iminuskplus_r[t+i+j+k], &res_iminuskplus_r[0]);
   }
   if(i < N-1 && k < O-1) {
-    res &= std::equal(&ipluskplus_r[0], &ipluskplus_r[t+i+j+k], &res_ipluskplus_r[0]);
+    res &= std::equal(&ipluskplus_r[0], &ipluskplus_r[t+i+j+k+2], &res_ipluskplus_r[0]);
   }
   if (j > 0 && k > 0) {
-    res &= std::equal(&jminuskminus_r[0], &jminuskminus_r[t+i+j+k], &res_iminuskminus_r[0]);
+    res &= std::equal(&jminuskminus_r[0], &jminuskminus_r[t+i+j+k-2], &res_iminuskminus_r[0]);
   }
   if (j < M-1 && k > 0) {
     res &= std::equal(&jpluskminus_r[0], &jpluskminus_r[t+i+j+k], &res_jpluskminus_r[0]);
@@ -351,31 +313,31 @@ int main(int argc, char** argv) {
     res &= std::equal(&jminuskplus_r[0], &jminuskplus_r[t+i+j+k], &res_jminuskplus_r[0]);
   }
   if(j < M-1 && k < O-1) {
-    res &= std::equal(&jpluskplus_r[0], &jpluskplus_r[t+i+j+k], &res_jpluskplus_r[0]);
+    res &= std::equal(&jpluskplus_r[0], &jpluskplus_r[t+i+j+k+2], &res_jpluskplus_r[0]);
   }
   if(i > 0 && j > 0 && k > 0) {
-    res &= std::equal(&iminusjminuskminus_r[0], &iminusjminuskminus_r[t+i+j+k], &res_iminusjminuskminus_r[0]);
+    res &= std::equal(&iminusjminuskminus_r[0], &iminusjminuskminus_r[t+i+j+k-3], &res_iminusjminuskminus_r[0]);
   }
   if(i < N-1 && j > 0 && k > 0) {
-    res &= std::equal(&iplusjminuskminus_r[0], &iplusjminuskminus_r[t+i+j+k], &res_iplusjminuskminus_r[0]);
+    res &= std::equal(&iplusjminuskminus_r[0], &iplusjminuskminus_r[t+i+j+k-1], &res_iplusjminuskminus_r[0]);
   }
   if(i > 0 && j < M-1 && k > 0) {
-    res &= std::equal(&iminusjpluskminus_r[0], &iminusjpluskminus_r[t+i+j+k], &res_iminusjpluskminus_r[0]);
+    res &= std::equal(&iminusjpluskminus_r[0], &iminusjpluskminus_r[t+i+j+k-1], &res_iminusjpluskminus_r[0]);
   }
   if(i < N-1 && j < M-1 && k > 0) {
-    res &= std::equal(&iplusjpluskminus_r[0], &iplusjpluskminus_r[t+i+j+k], &res_iplusjpluskminus_r[0]);
+    res &= std::equal(&iplusjpluskminus_r[0], &iplusjpluskminus_r[t+i+j+k+1], &res_iplusjpluskminus_r[0]);
   }
   if(i > 0 && j > 0 && k < O-1) {
-    res &= std::equal(&iminusjminuskplus_r[0], &iminusjminuskplus_r[t+i+j+k], &res_iminusjminuskplus_r[0]);
+    res &= std::equal(&iminusjminuskplus_r[0], &iminusjminuskplus_r[t+i+j+k-1], &res_iminusjminuskplus_r[0]);
   }
   if(i < N-1 && j > 0 && k < O-1) {
-    res &= std::equal(&iplusjminuskplus_r[0], &iplusjminuskplus_r[t+i+j+k], &res_iplusjminuskplus_r[0]);
+    res &= std::equal(&iplusjminuskplus_r[0], &iplusjminuskplus_r[t+i+j+k+1], &res_iplusjminuskplus_r[0]);
   }
   if(i > 0 && j < M-1 && k < O-1) {
-    res &= std::equal(&iminusjpluskplus_r[0], &iminusjpluskplus_r[t+i+j+k], &res_iminusjpluskplus_r[0]);
+    res &= std::equal(&iminusjpluskplus_r[0], &iminusjpluskplus_r[t+i+j+k+1], &res_iminusjpluskplus_r[0]);
   }
   if(i < N-1 && j < M-1 && k < O-1) {
-    res &= std::equal(&iplusjpluskplus_r[0], &iplusjpluskplus_r[t+i+j+k], &res_iplusjpluskplus_r[0]);
+    res &= std::equal(&iplusjpluskplus_r[0], &iplusjpluskplus_r[t+i+j+k+3], &res_iplusjpluskplus_r[0]);
   }
   
   int final;
