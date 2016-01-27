@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <vector>
 #include <mpi.h>
-//#include <Proc_Grid_1D.h>
 #include <TransmitBuffer.h>
 
 int main(int argc, char** argv) {
@@ -18,9 +17,6 @@ int main(int argc, char** argv) {
   MPI_Dims_create(nprocs, 1, dims);
   MPI_Cart_create(MPI_COMM_WORLD, 1, dims, period, false, &CartComm);
   
-  //Proc_Grid_1D_t proc_grid(CartComm);
-  
-  //TransmitBuffer_1D tb(&proc_grid);
   TransmitBuffer<1> tb(CartComm);
   tb.getcoords(i);
   tb.getdims(N);

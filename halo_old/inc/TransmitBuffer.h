@@ -42,9 +42,19 @@
    * 
    */
 
+  
+/**
+ * @brief Performs the data exchange
+ * The TransmitBuffer executes non-blocking sending and receiving of data and the synchronization with the neighbouring MPI processes.
+ * 
+ * @tparam DIMS Arrangemet dimension of the MPI processes
+ */  
 template <int DIMS>
 class TransmitBuffer {
   
+  /**
+   * Maps one-, two- or three-dimensional coordiantes to an associated one-dimensional position in the array of data buffers
+   */
   struct request_t {
     MPI_Request request[(int)pow(3, DIMS)];
     MPI_Request& operator()(int y) { 
@@ -94,39 +104,56 @@ class TransmitBuffer {
   
 private:
   
-  const Proc_Grid<DIMS> m_proc_grid;
-  Buffers<(int)pow(3, DIMS)> m_send_buffers;
-  Buffers<(int)pow(3, DIMS)> m_recv_buffers;
-  request_t send_request;
-  request_t recv_request;
+  const Proc_Grid<DIMS> m_proc_grid;			/**< Proc_Grid object: maps the relative coordinates to process ids */
+  Buffers<(int)pow(3, DIMS)> m_send_buffers;		/**< Stores pointers to the send data buffes */
+  Buffers<(int)pow(3, DIMS)> m_recv_buffers;		/**< Stores pointers to the receive data buffes */
+  request_t send_request;				/**< Object to map relative coordinates to one-dimensional coordinates in the buffer array */
+  request_t recv_request;				/**< Object to map relative coordinates to one-dimensional coordinates in the buffer array */
   
-  /* method to perform a non-blocking receive */  
+  /**
+   * Performs a non-blocking receive operation from a neighbouring process
+   * 
+   * @param Y relative coordinate
+   */  
   void Irecv(int Y) {
     MPI_Irecv(
-      static_cast<char *>(m_recv_buffers.buffer(Y)),	// pointer to buffer
-      m_recv_buffers.size(Y),				// buffer size (in byte)
+      static_cast<char *>(m_recv_buffers.buffer(Y)),		// pointer to buffer
+      m_recv_buffers.size(Y),					// buffer size (in byte)
       m_recv_buffers.datatype(),				// MPI datatype
-      m_proc_grid.proc(Y),				// coordinates
+      m_proc_grid.proc(Y),					// coordinates
       getTag(-Y),						// Message tag
       m_proc_grid.communicator(),				// MPI communicator
       &recv_request(-Y));
   }
-
+  
+  /**
+   * Performs a non-blocking receive operation from a neighbouring process
+   * 
+   * @param X relative coordinate for the first dimension
+   * @param Y relative coordinate for the second dimension
+   */  
   void Irecv(int X, int Y) {
     MPI_Irecv(
-      static_cast<char *>(m_recv_buffers.buffer(X, Y)),	// pointer to buffer
+      static_cast<char *>(m_recv_buffers.buffer(X, Y)),		// pointer to buffer
       m_recv_buffers.size(X, Y),				// buffer size (in byte)
       m_recv_buffers.datatype(),				// MPI datatype
-      m_proc_grid.proc(X, Y),				// coordinates
-      getTag(-X, -Y),					// Message tag
+      m_proc_grid.proc(X, Y),					// coordinates
+      getTag(-X, -Y),						// Message tag
       m_proc_grid.communicator(),				// MPI communicator
       &recv_request(-X, -Y));
   }
-
+  
+  /**
+   * Performs a non-blocking receive operation from a neighbouring process
+   * 
+   * @param X relative coordinate for the first dimension
+   * @param Y relative coordinate for the second dimension
+   * @param Z relative coordinate for the third dimension
+   */  
   void Irecv(int X, int Y, int Z) {
     MPI_Irecv(
-      static_cast<char *>(m_recv_buffers.buffer(X, Y, Z)),// pointer to buffer
-      m_recv_buffers.size(X, Y, Z),			// buffer size (in byte)
+      static_cast<char *>(m_recv_buffers.buffer(X, Y, Z)),	// pointer to buffer
+      m_recv_buffers.size(X, Y, Z),				// buffer size (in byte)
       m_recv_buffers.datatype(),				// MPI datatype
       m_proc_grid.proc(X, Y, Z),				// coordinates
       getTag(-X, -Y, -Z),					// Message tag
@@ -134,7 +161,11 @@ private:
       &recv_request(-X, -Y, -Z));
   }
   
-  /* method to perform a non-blocking send */
+  /**
+   * Performs a non-blocking send operation to a neighbouring process
+   * 
+   * @param Y relative coordinate
+   */  
   void Isend(int Y) {
     MPI_Isend(
       static_cast<char *>(m_send_buffers.buffer(Y)),		// pointer to buffer
@@ -146,6 +177,12 @@ private:
       &send_request(Y));
   }
 
+  /**
+   * Performs a non-blocking send operation to a neighbouring process
+   * 
+   * @param X relative coordinate for the first dimension
+   * @param Y relative coordinate for the second dimension
+   */  
   void Isend(int X, int Y) {
     MPI_Isend(
       static_cast<char *>(m_send_buffers.buffer(X, Y)),		// pointer to buffer
@@ -156,7 +193,14 @@ private:
       m_proc_grid.communicator(),				// MPI communicator
       &send_request(X, Y));
   }
-
+  
+  /**
+   * Performs a non-blocking send operation to a neighbouring process
+   * 
+   * @param X relative coordinate for the first dimension
+   * @param Y relative coordinate for the second dimension
+   * @param Z relative coordinate for the third dimension
+   */  
   void Isend(int X, int Y, int Z) {
     MPI_Isend(
       static_cast<char *>(m_send_buffers.buffer(X, Y, Z)),	// pointer to buffer
@@ -168,17 +212,34 @@ private:
       &send_request(X, Y, Z));
   }
   
-  /* Perform a simple MPI-Wait */
+  /**
+   * Performs a simple MPI-Wait and synchronizes with a neighbouring process
+   * 
+   * @param Y relative coordinate
+   */
   void wait(int Y) {
     MPI_Status status;
     MPI_Wait(&recv_request(-Y), &status);
   }
 
+  /**
+   * Performs a simple MPI-Wait and synchronizes with a neighbouring process
+   * 
+   * @param X relative coordinate for the first dimension
+   * @param Y relative coordinate for the second dimension
+   */
   void wait(int X, int Y) {
     MPI_Status status;
     MPI_Wait(&recv_request(-X, -Y), &status);
   }
-
+  
+  /**
+   * Performs a simple MPI-Wait and synchronizes with a neighbouring process
+   * 
+   * @param X relative coordinate for the first dimension
+   * @param Y relative coordinate for the second dimension
+   * @param Z relative coordinate for the third dimension
+   */
   void wait(int X, int Y, int Z) {
     MPI_Status status;
     MPI_Wait(&recv_request(-X, -Y, -Z), &status);
@@ -186,49 +247,114 @@ private:
   
 public:
 
+  /**
+   * Constructor that initializes all fields and stores the topology of the processes
+   * 
+   * @param _communicator MPI_Comm object representing the grid's topology
+   */
+  
   TransmitBuffer(MPI_Comm& _communicator) : m_proc_grid(_communicator), 
                                             m_send_buffers(), 
                                             m_recv_buffers() {}
   
-  /* Default constructor */
+  /**
+   * Default constructor 
+   */
   TransmitBuffer() { }
   
+  /**
+   * Initializes the send buffer for data exchange with a neighbouring process in a one-dimensional grid
+   * 
+   * @param *p pointer to the data 
+   * @param &DT MPI_Datatype 
+   * @param s size of the buffer
+   * @param Y relative coordinate of the neighbouring process
+   */
   void init_send_buffer( void *p, MPI_Datatype const &DT, int s, int Y ) {
     m_send_buffers.buffer(Y) = reinterpret_cast<char *>(p);
     m_send_buffers.datatype() = DT;
     m_send_buffers.size(Y) = s;
   }
-
+  
+  /**
+   * Initializes the send buffer for data exchange with a neighbouring process in a two-dimensional grid
+   * 
+   * @param *p pointer to the data 
+   * @param &DT MPI_Datatype 
+   * @param s size of the buffer
+   * @param X relative coordinate of the neighbouring process in the first dimension
+   * @param Y relative coordinate of the neighbouring process in the second dimension
+   */
   void init_send_buffer( void *p, MPI_Datatype const &DT, int s, int X, int Y ) {
     m_send_buffers.buffer(X, Y) = reinterpret_cast<char *>(p);
     m_send_buffers.datatype() = DT;
     m_send_buffers.size(X, Y) = s;
   }
-
+  
+  /**
+   * Initializes the send buffer for data exchange with a neighbouring process in a three-dimensional grid
+   * 
+   * @param *p pointer to the data 
+   * @param &DT MPI_Datatype 
+   * @param s size of the buffer
+   * @param X relative coordinate of the neighbouring process in the first dimension
+   * @param Y relative coordinate of the neighbouring process in the second dimension
+   * @param Z relative coordinate of the neighbouring process in the third dimension
+   */
   void init_send_buffer( void *p, MPI_Datatype const &DT, int s, int X, int Y, int Z ) {
     m_send_buffers.buffer(X, Y, Z) = reinterpret_cast<char *>(p);
     m_send_buffers.datatype() = DT;
     m_send_buffers.size(X, Y, Z) = s;
   }
   
+  /**
+   * Initializes the receive buffer for data exchange with a neighbouring process in a one-dimensional grid
+   * 
+   * @param *p pointer to the data 
+   * @param &DT MPI_Datatype 
+   * @param s size of the buffer
+   * @param Y relative coordinate of the neighbouring process
+   */
   void init_recv_buffer( void *p, MPI_Datatype const &DT, int s, int Y ) {
     m_recv_buffers.buffer(Y) = reinterpret_cast<char *>(p);
     m_recv_buffers.datatype() = DT;
     m_recv_buffers.size(Y) = s;
   }
-
+  
+  /**
+   * Initializes the receive buffer for data exchange with a neighbouring process in a two-dimensional grid
+   * 
+   * @param *p pointer to the data 
+   * @param &DT MPI_Datatype 
+   * @param s size of the buffer
+   * @param X relative coordinate of the neighbouring process in the first dimension
+   * @param Y relative coordinate of the neighbouring process in the second dimension
+   */
   void init_recv_buffer( void *p, MPI_Datatype const &DT, int s, int X, int Y ) {
     m_recv_buffers.buffer(X, Y) = reinterpret_cast<char *>(p);
     m_recv_buffers.datatype() = DT;
     m_recv_buffers.size(X, Y) = s;
   }
-
+  
+  /**
+   * Initializes the receive buffer for data exchange with a neighbouring process in a three-dimensional grid
+   * 
+   * @param *p pointer to the data 
+   * @param &DT MPI_Datatype 
+   * @param s size of the buffer
+   * @param X relative coordinate of the neighbouring process in the first dimension
+   * @param Y relative coordinate of the neighbouring process in the second dimension
+   * @param Z relative coordinate of the neighbouring process in the third dimension
+   */
   void init_recv_buffer( void *p, MPI_Datatype const &DT, int s, int X, int Y, int Z ) {
     m_recv_buffers.buffer(X, Y, Z) = reinterpret_cast<char *>(p);
     m_recv_buffers.datatype() = DT;
     m_recv_buffers.size(X, Y, Z) = s;
   }
   
+  /**
+   * Performs the non-blocking data receive operation for all neighbouring proesses in the grid
+   */
   void do_receives() {
   /* Posting receives */
   for (auto i=-1; i<=1; i++) {
@@ -254,6 +380,9 @@ public:
     }
   }
   
+  /**
+   * Performs the non-blocking data send operation for all neighbouring proesses in the grid
+   */
   void do_sends(void) {
     /* Sending data */
     for (auto i=-1; i<=1; i++) {
@@ -279,6 +408,9 @@ public:
     }
   }
   
+  /**
+   * Performs the synchronization operation for all neighbouring proesses in the grid
+   */
   void do_waits() {
     /* Actual receives */
     for (auto i=-1; i<=1; i++) {

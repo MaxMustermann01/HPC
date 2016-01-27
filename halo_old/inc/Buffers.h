@@ -19,7 +19,7 @@ public:
    * Constructor for the buffers.
    * Initializes all pointers and sizes with standard values
    */
-    Buffers() {
+    explicit Buffers() {
       /* set all array values to zero */
       std::fill(&m_buffers[0], &m_buffers[SIZE - 1], nullptr);
       std::fill(&m_size[0], &m_size[SIZE - 1], 0);
@@ -51,13 +51,11 @@ public:
       if (x<-1 || y<-1|| x>1 || y>1) {
 	std::cout << "Wrong index: must be -1 <= i <= 1!" << std::endl;
       }
-      return m_buffers[(x+1)*3 + y+1 ];
-      
+      return m_buffers[(x+1)*3 + y+1 ]; 
     }
     
     char*& buffer(int y) { 
       return m_buffers[ y+1 ]; 
-      
     }
     
     /** 
@@ -82,7 +80,6 @@ public:
 	std::cout << "Wrong index: must be -1 <= i <= 1!" << std::endl;
       } 
       return m_size[ (x+1)*9 + (y+1)*3 + z+1 ];
-      
     }
     
     /** 
@@ -97,7 +94,6 @@ public:
 	std::cout << "Wrong index: must be -1 <= i <= 1!" << std::endl;
       } 
       return m_size[ (x+1)*3 + y+1 ]; 
-      
     }
     
     int& size(int y) { return m_size[ y+1 ]; }
