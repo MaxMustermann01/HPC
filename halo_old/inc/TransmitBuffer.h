@@ -56,7 +56,11 @@ class TransmitBuffer {
    * Maps one-, two- or three-dimensional coordiantes to an associated one-dimensional position in the array of data buffers
    */
   struct request_t {
-    MPI_Request request[(int)pow(3, DIMS)];
+    MPI_Request request[(int)pow(3, DIMS)];		/**< an array of MPI_Request, storing references to neighbours in one array */
+    /**
+     * @param y relative one-dimensional coordinate
+     * @return an MPI_Request for the associated neighbouring process 
+     */
     MPI_Request& operator()(int y) { 
       if (y < -1 || y > 1) {
         throw std::out_of_range("Wrong indizes: must be -1 <= i <= 1!");
@@ -64,6 +68,11 @@ class TransmitBuffer {
       }
       return request[ y+1 ]; 
     }
+    /** 
+     * @param x relative coordinate first dimension
+     * @param y relative coordinate second dimension
+     * @return an MPI_Request for the associated neighbouring process 
+     */
     MPI_Request& operator()(int x, int y) { 
       if (x < -1 || y < -1 || x > 1 || y > 1) {
         throw std::out_of_range("Wrong indizes: must be -1 <= i <= 1!");
@@ -71,6 +80,12 @@ class TransmitBuffer {
       }
       return request[ (x+1)*3 + (y+1) ];
     }
+    /**
+     * @param x relative coordinate first dimension
+     * @param y relative coordinate second dimension
+     * @param z relative coordinate third dimension
+     * @return an MPI_Request for the associated neighbouring process 
+     */
     MPI_Request& operator()(int x, int y, int z) { 
       if (x < -1 || y < -1 || z < -1 || x > 1 || y > 1 || z > 1) {
         throw std::out_of_range("Wrong indizes: must be -1 <= i <= 1!");
@@ -79,21 +94,33 @@ class TransmitBuffer {
       return request[ (x+1)*9 + (y+1)*3 + z+1 ];
     }
   };
-  
+    /**
+     * @param y relative one-dimensional coordinate
+     * @return Integer index in an one-dimensional array
+     */
   int getTag(int Y) {
     if (Y < -1 || Y > 1) {
       throw std::out_of_range("Wrong indizes: must be -1 <= i <= 1!");
     }
     return Y+1;
   }
-  
+    /** 
+     * @param x relative coordinate first dimension
+     * @param y relative coordinate second dimension
+     * @return Integer index in an one-dimensional array
+     */  
   int getTag(int X, int Y) {
     if (X < -1 || Y < -1 || X > 1 || Y > 1) {
       throw std::out_of_range("Wrong indizes: must be -1 <= i <= 1!");
     }
     return (X + 1)*3 + Y+1;
   }
-  
+    /**
+     * @param x relative coordinate first dimension
+     * @param y relative coordinate second dimension
+     * @param z relative coordinate third dimension
+     * @return Integer index in an one-dimensional array
+     */
   int getTag(int X, int Y, int Z) {
     if (X < -1 || Y < -1 || Z < -1 || X > 1 || Y > 1 || Z > 1) {
       throw std::out_of_range("Wrong indizes: must be -1 <= i <= 1!");
@@ -268,7 +295,7 @@ public:
    * @param *p pointer to the data 
    * @param &DT MPI_Datatype 
    * @param s size of the buffer
-   * @param Y relative coordinate of the neighbouring process
+   * @param Y coordinate in the process gird
    */
   void init_send_buffer( void *p, MPI_Datatype const &DT, int s, int Y ) {
     m_send_buffers.buffer(Y) = reinterpret_cast<char *>(p);
@@ -282,8 +309,8 @@ public:
    * @param *p pointer to the data 
    * @param &DT MPI_Datatype 
    * @param s size of the buffer
-   * @param X relative coordinate of the neighbouring process in the first dimension
-   * @param Y relative coordinate of the neighbouring process in the second dimension
+   * @param X coordinate in the process gird
+   * @param Y coordinate in the process gird
    */
   void init_send_buffer( void *p, MPI_Datatype const &DT, int s, int X, int Y ) {
     m_send_buffers.buffer(X, Y) = reinterpret_cast<char *>(p);
@@ -297,9 +324,9 @@ public:
    * @param *p pointer to the data 
    * @param &DT MPI_Datatype 
    * @param s size of the buffer
-   * @param X relative coordinate of the neighbouring process in the first dimension
-   * @param Y relative coordinate of the neighbouring process in the second dimension
-   * @param Z relative coordinate of the neighbouring process in the third dimension
+   * @param X coordinate in the process gird
+   * @param Y coordinate in the process gird
+   * @param Z coordinate in the process gird
    */
   void init_send_buffer( void *p, MPI_Datatype const &DT, int s, int X, int Y, int Z ) {
     m_send_buffers.buffer(X, Y, Z) = reinterpret_cast<char *>(p);
@@ -313,7 +340,7 @@ public:
    * @param *p pointer to the data 
    * @param &DT MPI_Datatype 
    * @param s size of the buffer
-   * @param Y relative coordinate of the neighbouring process
+   * @param Y coordinate in the process gird
    */
   void init_recv_buffer( void *p, MPI_Datatype const &DT, int s, int Y ) {
     m_recv_buffers.buffer(Y) = reinterpret_cast<char *>(p);
@@ -327,8 +354,8 @@ public:
    * @param *p pointer to the data 
    * @param &DT MPI_Datatype 
    * @param s size of the buffer
-   * @param X relative coordinate of the neighbouring process in the first dimension
-   * @param Y relative coordinate of the neighbouring process in the second dimension
+   * @param X coordinate in the process gird
+   * @param Y coordinate in the process gird
    */
   void init_recv_buffer( void *p, MPI_Datatype const &DT, int s, int X, int Y ) {
     m_recv_buffers.buffer(X, Y) = reinterpret_cast<char *>(p);
@@ -342,9 +369,9 @@ public:
    * @param *p pointer to the data 
    * @param &DT MPI_Datatype 
    * @param s size of the buffer
-   * @param X relative coordinate of the neighbouring process in the first dimension
-   * @param Y relative coordinate of the neighbouring process in the second dimension
-   * @param Z relative coordinate of the neighbouring process in the third dimension
+   * @param X coordinate in the process gird
+   * @param Y coordinate in the process gird
+   * @param Z coordinate in the process gird
    */
   void init_recv_buffer( void *p, MPI_Datatype const &DT, int s, int X, int Y, int Z ) {
     m_recv_buffers.buffer(X, Y, Z) = reinterpret_cast<char *>(p);
@@ -359,19 +386,19 @@ public:
   /* Posting receives */
   for (auto i=-1; i<=1; i++) {
       if (DIMS == 1) {
-        if (i!=0 && m_proc_grid.proc(i)!=-1)
+        if (i!=0 && m_proc_grid.proc(i)!=-1 && (m_recv_buffers.size(i)!=0))
           Irecv(i);
       }
       else {
         for (auto j=-1; j<=1; j++) {
           if (DIMS == 2) {
-            if ((i!=0 || j!=0) && m_proc_grid.proc(i, j)!=-1)
+            if ((i!=0 || j!=0) && m_proc_grid.proc(i, j)!=-1 && (m_recv_buffers.size(i, j)!=0))
               Irecv(i, j);
           }
           else {
             if (DIMS == 3) {
               for (auto k=-1; k<=1; k++)
-                if ((i!=0 || j!=0 || k!=0) && m_proc_grid.proc(i, j, k)!=-1)
+                if ((i!=0 || j!=0 || k!=0) && m_proc_grid.proc(i, j, k)!=-1 && (m_recv_buffers.size(i, j, k)!=0))
                   Irecv(i, j, k);
             }
           }
@@ -387,19 +414,19 @@ public:
     /* Sending data */
     for (auto i=-1; i<=1; i++) {
       if (DIMS == 1) {
-        if (i!=0 && m_proc_grid.proc(i)!=-1)
+        if (i!=0 && m_proc_grid.proc(i)!=-1 && (m_send_buffers.size(i)!=0))
           Isend(i);
       }
       else {
         for (auto j=-1; j<=1; j++) {
           if (DIMS == 2) {
-            if ((i!=0 || j!=0) && m_proc_grid.proc(i, j)!=-1)
+            if ((i!=0 || j!=0) && m_proc_grid.proc(i, j)!=-1 && (m_send_buffers.size(i, j)!=0))
               Isend(i, j);
           }
           else {
             if (DIMS == 3) {
               for (auto k=-1; k<=1; k++)
-                if ((i!=0 || j!=0 || k!=0) && m_proc_grid.proc(i, j, k)!=-1)
+                if ((i!=0 || j!=0 || k!=0) && m_proc_grid.proc(i, j, k)!=-1 && (m_send_buffers.size(i, j, k)!=0))
                   Isend(i, j, k);
             }
           }
@@ -415,19 +442,19 @@ public:
     /* Actual receives */
     for (auto i=-1; i<=1; i++) {
       if (DIMS == 1) {
-        if (i!=0 && m_proc_grid.proc(i)!=-1)
+        if (i!=0 && m_proc_grid.proc(i)!=-1 && (m_send_buffers.size(i)!=0))
           wait(i);
       }
       else {
         for (auto j=-1; j<=1; j++) {
           if (DIMS == 2) {
-            if ((i!=0 || j!=0) && m_proc_grid.proc(i, j)!=-1)
+            if ((i!=0 || j!=0) && m_proc_grid.proc(i, j)!=-1 && (m_send_buffers.size(i, j)!=0))
               wait(i, j);
           }
           else {
             if (DIMS == 3) {
               for (auto k=-1; k<=1; k++)
-                if ((i!=0 || j!=0 || k!=0) && m_proc_grid.proc(i, j, k)!=-1)
+                if ((i!=0 || j!=0 || k!=0) && m_proc_grid.proc(i, j, k)!=-1 && (m_send_buffers.size(i, j, k)!=0))
                   wait(i, j, k);
             }
           }
@@ -436,38 +463,89 @@ public:
     }
   }
   
+  /**
+   * Saves the size of the one-dimensional process-grid in a field
+   * @param &t_R Integer field, where to store the information
+   */
   void getdims(int &t_R) const {
     m_proc_grid.dims(t_R);
   }
-
+  
+  /**
+   * Saves the size of the two-dimensional process-grid in a field
+   * @param &t_R Integer field, where to store the information for the first dimension
+   * @param &t_C Integer field, where to store the information for the second dimension
+   */
   void getdims(int &t_R, int &t_C) const {
     m_proc_grid.dims(t_R, t_C);
   }
 
+  /**
+   * Saves the size of the three-dimensional process-grid in a field
+   * @param &t_R Integer field, where to store the information for the first dimension
+   * @param &t_C Integer field, where to store the information for the second dimension
+   * @param &t_Z Integer field, where to store the information for the third dimension
+   */
   void getdims(int &t_R, int &t_C, int &t_Z) const {
     m_proc_grid.dims(t_R, t_C, t_Z);
   }
   
+  /**
+   * Saves the coordinat of one process in the one-dimensional process-grid in a field
+   * @param &t_R Integer field, where to store the information
+   */
   void getcoords(int &t_R) const {
     m_proc_grid.coords(t_R);
   }
 
+  /**
+   * Saves the coordinat of one process in the two-dimensional process-grid in a field
+   * @param &t_R Integer field, where to store the information for the first dimension
+   * @param &t_C Integer field, where to store the information for the second dimension
+   */
   void getcoords(int &t_R, int &t_C) const {
     m_proc_grid.coords(t_R, t_C);
   }
 
+  /**
+   * Saves the coordinat of one process in the three-dimensional process-grid in a field
+   * @param &t_R Integer field, where to store the information for the first dimension
+   * @param &t_C Integer field, where to store the information for the second dimension
+   * @param &t_Z Integer field, where to store the information for the third dimension
+   */
   void getcoords(int &t_R, int &t_C, int &t_Z) const {
     m_proc_grid.coords(t_R, t_C, t_Z);
   }
   
+  /**
+   * Returns the process of id of the process with given relative coordiantes in the one-dimensional grid
+   * 
+   * @param Y relative coordinate
+   * @return process id
+   */
   int getprocid(int Y) const {
     return m_proc_grid.proc(Y);
   }
 
+  /**
+   * Returns the process of id of the process with given relative coordiantes in the two-dimensional grid
+   * 
+   * @param X relative coordinate
+   * @param Y relative coordinate
+   * @return process id
+   */
   int getprocid(int X, int Y) const {
     return m_proc_grid.proc(X, Y);
   }
 
+  /**
+   * Returns the process of id of the process with given relative coordiantes in the two-dimensional grid
+   * 
+   * @param X relative coordinate
+   * @param Y relative coordinate
+   * @param Z relatvie coordinate
+   * @return process id
+   */
   int getprocid(int X, int Y, int Z) const {
     return m_proc_grid.proc(X, Y, Z);
   }
