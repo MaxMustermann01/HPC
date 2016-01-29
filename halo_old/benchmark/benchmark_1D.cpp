@@ -7,15 +7,13 @@
 #include <fstream>
 #include <sstream>
 
-#define ITERATIONS 100
+#define ITERATIONS 1
 
 int main(int argc, char** argv) {
   int pid, nprocs;
   /* 1D case */
   int dims_1D[1] = {0}, period_1D[1] = {0};
   MPI_Comm CartComm_1D;
-  std::vector<double> iminus, iplus;
-  std::vector<double> iminus_r, iplus_r;
   
   /* Initialize MPI */
   MPI_Init(&argc, &argv);
@@ -30,14 +28,12 @@ int main(int argc, char** argv) {
   std::stringstream fname ;
   fname << "benchmark/halo_1D_" << nprocs << ".dat" ;
   std::ofstream f_mr;
-  f_mr.open(fname.str());
+  if (pid == 0) f_mr.open(fname.str());
     
   /* ... */
-  for (auto gridsize = 1024; gridsize < 4194304; gridsize *= 2) {
-    iminus.resize(gridsize*gridsize);
-    iplus.resize(gridsize*gridsize);
-    iminus_r.resize(gridsize*gridsize);
-    iplus_r.resize(gridsize*gridsize);
+  for (auto gridsize = 32; gridsize < 16384; gridsize *= 2) {
+    std::vector<double> iminus(gridsize*gridsize), iplus(gridsize*gridsize);
+    std::vector<double> iminus_r(gridsize*gridsize), iplus_r(gridsize*gridsize);
     
     tb_1D.init_send_buffer(&iminus[0], MPI_DOUBLE, (gridsize*gridsize), -1);
     tb_1D.init_send_buffer(&iplus[0], MPI_DOUBLE, (gridsize*gridsize), 1);
@@ -56,9 +52,9 @@ int main(int argc, char** argv) {
     }
     auto t2 = std::chrono::high_resolution_clock::now();
     auto int_ms = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
-    f_mr << gridsize << "\t" << int_ms.count()/ITERATIONS << std::endl;
+    if (pid == 0) f_mr << gridsize << "\t" << int_ms.count()/ITERATIONS << std::endl;
   }
-  f_mr.close();
+  if (pid == 0) f_mr.close();
   
   MPI_Barrier(CartComm_1D);
   
