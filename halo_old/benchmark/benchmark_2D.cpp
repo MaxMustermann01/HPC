@@ -16,6 +16,12 @@ int main(int argc, char** argv) {
   
   /* Initialize MPI */
   MPI_Init(&argc, &argv);
+  
+  std::istringstream ss(argv[1]);
+  int gridsize;
+  if (!(ss >> gridsize))
+    std::cerr << "Invalid Argument " << argv[1] << '\n';
+  
   MPI_Comm_rank(MPI_COMM_WORLD, &pid);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
   /* Create cart communicator */
@@ -27,12 +33,12 @@ int main(int argc, char** argv) {
   std::stringstream fname ;
   fname << "benchmark/halo_2D_" << nprocs << ".dat" ;
   std::ofstream f_mr;
-  if (pid == 0) f_mr.open(fname.str());
+  if (pid == 0) f_mr.open(fname.str(), std::ios_base::app);
   
   tb.getdims(N, M);
   
   /* ... */
-  for (auto gridsize = 32; gridsize < 16384; gridsize *= 2) {
+  //for (auto gridsize = 32; gridsize < 16384; gridsize *= 2) {
     int ysize = gridsize/N;
     int xsize = gridsize/M;
     
@@ -65,7 +71,7 @@ int main(int argc, char** argv) {
     auto t2 = std::chrono::high_resolution_clock::now();
     auto int_ms = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
     if (pid == 0) f_mr << gridsize << "\t" << int_ms.count()/ITERATIONS << std::endl;
-  }
+  //}
   if (pid == 0) f_mr.close();
   
   MPI_Barrier(CartComm);
