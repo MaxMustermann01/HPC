@@ -386,19 +386,19 @@ public:
   /* Posting receives */
   for (auto i=-1; i<=1; i++) {
       if (DIMS == 1) {
-        if (i!=0 && m_proc_grid.proc(i)!=-1 && (m_recv_buffers.getsize(i)!=0))
+        if (i!=0 && m_proc_grid.proc(i)!=-1 && (m_recv_buffers.size(i)!=0))
           Irecv(i);
       }
       else {
         for (auto j=-1; j<=1; j++) {
           if (DIMS == 2) {
-            if ((i!=0 || j!=0) && m_proc_grid.proc(i, j)!=-1 && (m_recv_buffers.getsize(i, j)!=0))
+            if ((i!=0 || j!=0) && m_proc_grid.proc(i, j)!=-1 && (m_recv_buffers.size(i, j)!=0))
               Irecv(i, j);
           }
           else {
             if (DIMS == 3) {
               for (auto k=-1; k<=1; k++)
-                if ((i!=0 || j!=0 || k!=0) && m_proc_grid.proc(i, j, k)!=-1 && (m_recv_buffers.getsize(i, j, k)!=0))
+                if ((i!=0 || j!=0 || k!=0) && m_proc_grid.proc(i, j, k)!=-1 && (m_recv_buffers.size(i, j, k)!=0))
                   Irecv(i, j, k);
             }
           }
@@ -414,19 +414,19 @@ public:
     /* Sending data */
     for (auto i=-1; i<=1; i++) {
       if (DIMS == 1) {
-        if (i!=0 && m_proc_grid.proc(i)!=-1 && (m_send_buffers.getsize(i)!=0))
+        if (i!=0 && m_proc_grid.proc(i)!=-1 && (m_send_buffers.size(i)!=0))
           Isend(i);
       }
       else {
         for (auto j=-1; j<=1; j++) {
           if (DIMS == 2) {
-            if ((i!=0 || j!=0) && m_proc_grid.proc(i, j)!=-1 && (m_send_buffers.getsize(i, j)!=0))
+            if ((i!=0 || j!=0) && m_proc_grid.proc(i, j)!=-1 && (m_send_buffers.size(i, j)!=0))
               Isend(i, j);
           }
           else {
             if (DIMS == 3) {
               for (auto k=-1; k<=1; k++)
-                if ((i!=0 || j!=0 || k!=0) && m_proc_grid.proc(i, j, k)!=-1 && (m_send_buffers.getsize(i, j, k)!=0))
+                if ((i!=0 || j!=0 || k!=0) && m_proc_grid.proc(i, j, k)!=-1 && (m_send_buffers.size(i, j, k)!=0))
                   Isend(i, j, k);
             }
           }
@@ -442,19 +442,19 @@ public:
     /* Actual receives */
     for (auto i=-1; i<=1; i++) {
       if (DIMS == 1) {
-        if (i!=0 && m_proc_grid.proc(i)!=-1 && (m_send_buffers.getsize(i)!=0))
+        if (i!=0 && m_proc_grid.proc(i)!=-1 && (m_send_buffers.size(i)!=0))
           wait(i);
       }
       else {
         for (auto j=-1; j<=1; j++) {
           if (DIMS == 2) {
-            if ((i!=0 || j!=0) && m_proc_grid.proc(i, j)!=-1 && (m_send_buffers.getsize(i, j)!=0))
+            if ((i!=0 || j!=0) && m_proc_grid.proc(i, j)!=-1 && (m_send_buffers.size(i, j)!=0))
               wait(i, j);
           }
           else {
             if (DIMS == 3) {
               for (auto k=-1; k<=1; k++)
-                if ((i!=0 || j!=0 || k!=0) && m_proc_grid.proc(i, j, k)!=-1 && (m_send_buffers.getsize(i, j, k)!=0))
+                if ((i!=0 || j!=0 || k!=0) && m_proc_grid.proc(i, j, k)!=-1 && (m_send_buffers.size(i, j, k)!=0))
                   wait(i, j, k);
             }
           }

@@ -119,6 +119,13 @@ public:
     t_C = c;
   }
 
+  /**
+   * Retrieves the poisition of the process in the three-dimensional grid
+   *
+   * @param &t_R field where to store the information for the first dimension
+   * @param &t_C field where to store the information for the second dimension
+   * @param &t_Z field where to store the information for the third dimension
+   */
   void coords(int &t_R, int &t_C, int &t_Z) const {
     t_R = r;
     t_C = c;
@@ -126,11 +133,7 @@ public:
   }
 
   /**
-   * Retrieves the poisition of the process in the three-dimensional grid
-   *
-   * @param &t_R field where to store the information for the first dimension
-   * @param &t_C field where to store the information for the second dimension
-   * @param &t_Z field where to store the information for the third dimension
+   * @returns process id
    */
   int getprocid() {
     return pid;

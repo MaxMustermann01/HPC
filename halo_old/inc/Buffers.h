@@ -21,8 +21,8 @@ public:
    */
     explicit Buffers() {
       /* set all array values to zero */
-      std::fill(&m_buffers[0], &m_buffers[SIZE - 1], nullptr);
-      std::fill(&m_size[0], &m_size[SIZE - 1], 0);
+      std::fill(&m_buffers[0], &m_buffers[SIZE], nullptr);
+      std::fill(&m_size[0], &m_size[SIZE], 0);
     }
     
     /** 
@@ -115,30 +115,6 @@ public:
      * @return reference of an integer, the respective buffer size 
      */
     int& size(int x, int y, int z) { 
-      if (x < -1 || y < -1 || z < -1 || x > 1 || y > 1 || z > 1) {
-	std::cout << "Wrong index: must be -1 <= i <= 1!" << std::endl;
-      } 
-      return m_size[ (x+1)*9 + (y+1)*3 + z+1 ];
-      
-    }
-    
-    int getsize(int x) { 
-      if (x < -1 || x > 1) {
-	std::cout << "Wrong index: must be -1 <= i <= 1!" << std::endl;
-      } 
-      return m_size[ x+1 ]; 
-      
-    }
-    
-    int getsize(int x, int y) { 
-      if (x < -1 || y < -1 || x > 1 || y > 1) {
-	std::cout << "Wrong index: must be -1 <= i <= 1!" << std::endl;
-      } 
-      return m_size[ (x+1)*3 + y+1 ]; 
-      
-    }
-    
-    int getsize(int x, int y, int z) { 
       if (x < -1 || y < -1 || z < -1 || x > 1 || y > 1 || z > 1) {
 	std::cout << "Wrong index: must be -1 <= i <= 1!" << std::endl;
       } 
