@@ -6,6 +6,7 @@
 #include <TransmitBuffer.h>
 
 int main(int argc, char** argv) {
+  
   int pid, nprocs;
   int dims[3] = {0, 0, 0}, period[3] = {0, 0, 0};
   int t = 16;
