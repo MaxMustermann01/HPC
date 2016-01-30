@@ -65,7 +65,8 @@ public:
       if (x < -1 || y < -1 || z < -1 || x > 1 || y > 1 || z > 1) {
 	std::cout << "Wrong index: must be -1 <= i <= 1!" << std::endl;
       }
-      return m_buffers[ (x+1)*9 + (y+1)*3 + z+1 ]; 
+      //return m_buffers[ (x+1)*9 + (y+1)*3 + z+1 ]; 
+       return m_buffers[ (z+1)*9 + (y+1)*3 + x+1 ]; 
     }
     
     /** 
@@ -118,8 +119,8 @@ public:
       if (x < -1 || y < -1 || z < -1 || x > 1 || y > 1 || z > 1) {
 	std::cout << "Wrong index: must be -1 <= i <= 1!" << std::endl;
       } 
-      return m_size[ (x+1)*9 + (y+1)*3 + z+1 ];
-      
+      //return m_size[ (x+1)*9 + (y+1)*3 + z+1 ];
+      return m_size[ (z+1)*9 + (y+1)*3 + x+1 ];
     }
     
   };

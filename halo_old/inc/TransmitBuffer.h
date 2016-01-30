@@ -91,7 +91,8 @@ class TransmitBuffer {
         throw std::out_of_range("Wrong indizes: must be -1 <= i <= 1!");
 	exit(1);
       }
-      return request[ (x+1)*9 + (y+1)*3 + z+1 ];
+      //return request[ (x+1)*9 + (y+1)*3 + z+1 ];
+      return request[ (z+1)*9 + (y+1)*3 + x+1 ];
     }
   };
     /**
@@ -125,7 +126,8 @@ class TransmitBuffer {
     if (X < -1 || Y < -1 || Z < -1 || X > 1 || Y > 1 || Z > 1) {
       throw std::out_of_range("Wrong indizes: must be -1 <= i <= 1!");
     }
-    return (X + 1)*9 + (Y+1)*3 + Z+1;
+    //return (X + 1)*9 + (Y+1)*3 + Z+1;
+    return (Z+1)*9 + (X+1)*3 + Y+1;
   }
 
   
