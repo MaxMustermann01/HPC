@@ -14,8 +14,8 @@ template <int DIMS>
 class Proc_Grid {
 private:
   MPI_Comm m_communicator;		/**< MPI_Comm object containing the topology of the MPI proesses */
-  int R, C, Z;				/**< Integer values storing the size of the grid in potentially 3 dimensions */
-  int r, c, z;				/**< Integer values storing the position of one process in the grid in potentially 3 dimensions */
+  int R, C, S;				/**< Integer values storing the size of the grid in potentially 3 dimensions */
+  int r, c, s;				/**< Integer values storing the position of one process in the grid in potentially 3 dimensions */
   int pid;				/**< Integer value: the MPI process id */
   
   /**
@@ -37,8 +37,8 @@ private:
       c = coords[1];
     }
     if (DIMS == 3) {
-      Z = dims[2];
-      z = coords[2];
+      S = dims[2];
+      s = coords[2];
     }
 }
   
@@ -96,7 +96,7 @@ public:
   void dims(int &t_R, int &t_C, int &t_Z) const {
     t_R = R;
     t_C = C;
-    t_Z = Z;
+    t_Z = S;
   }
   
   /**
@@ -129,7 +129,7 @@ public:
   void coords(int &t_R, int &t_C, int &t_Z) const {
     t_R = r;
     t_C = c;
-    t_Z = z;
+    t_Z = s;
   }
 
   /**
@@ -199,8 +199,8 @@ public:
     coords[1] = c + Y;
     if( coords[1] < 0 || coords[1] >= C )
       return -1;
-    coords[2] = z + Z;
-    if(coords[2] < 0 || coords[2] >= Z )
+    coords[2] = s + Z;
+    if(coords[2] < 0 || coords[2] >= S )
       return -1;
     
     MPI_Cart_rank( m_communicator, coords, &res );
