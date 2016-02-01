@@ -258,7 +258,7 @@ int main(int argc, char** argv) {
   std::fill(&res_iplusjminuskplus_r[0], &res_iplusjminuskplus_r[t+i+j+k+1], tb.getprocid(1,-1,1));
   std::fill(&res_jminuskplus_r[0], &res_jminuskplus_r[t+i+j+k], tb.getprocid(0,-1,1));
   std::fill(&res_iminusjminuskplus_r[0], &res_iminusjminuskplus_r[t+i+j+k-1], tb.getprocid(-1,-1,1));
-
+//bla
   int res = 1;
   
   if (i>0) {
