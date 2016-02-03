@@ -50,14 +50,9 @@ int main(int argc, char** argv) {
   TransmitBuffer<1> tb(CartComm);
   
   std::stringstream fname ;
-  fname << "benchmark/halo_1D_comm_" << nprocs << ".dat" ;
+  fname << "benchmark/halo_1D_" << nprocs << ".dat" ;
   std::ofstream f_mr;
   if (pid == 0) f_mr.open(fname.str(), std::ios_base::app);
-  
-  std::stringstream fnamecalc ;
-  fnamecalc << "benchmark/halo_1D_calc_" << nprocs << ".dat" ;
-  std::ofstream f_mr_calc;
-  if (pid == 0) f_mr_calc.open(fnamecalc.str(), std::ios_base::app);
   
   tb.getdims(N);
   
@@ -106,15 +101,15 @@ int main(int argc, char** argv) {
     /* Do the actual stencil calculation */
     int ii=1, jj=1, kk=1;
     for (auto i=0; i < gridsize; i++) {
-      if (ii > (EDGE_LENGTH-2)) ii=1;
+      if (ii == (EDGE_LENGTH-3)) ii=1;
       else ii++;
       
       for (auto j=0; j < ysize; j++) {
-        if (jj > (EDGE_LENGTH-2)) jj=1;
+        if (jj == (EDGE_LENGTH-3)) jj=1;
         else jj++;
 
         for (auto k=0; k < gridsize; k++) {
-          if (kk > (EDGE_LENGTH-2)) kk=1;
+          if (kk == (EDGE_LENGTH-3)) kk=1;
           else kk++;
 
           grid[1-index][ii][jj][kk] = calcStencil( grid[index][ii-1][jj][kk],
@@ -136,11 +131,9 @@ int main(int argc, char** argv) {
   auto t4 = std::chrono::high_resolution_clock::now();
   auto int_ms_calc = std::chrono::duration_cast<std::chrono::milliseconds>(t4 - t3);
   
-  if (pid == 0) f_mr << gridsize << "\t" << int_ms.count()/iterations << std::endl;
-  if (pid == 0) f_mr_calc << gridsize << "\t" << int_ms_calc.count()/iterations << std::endl;
+  if (pid == 0) f_mr << gridsize << "\t" << int_ms.count()/iterations << "\t" << int_ms_calc.count()/iterations << std::endl;
   
   if (pid == 0) f_mr.close();
-  if (pid == 0) f_mr_calc.close();
   
   MPI_Finalize();
   
