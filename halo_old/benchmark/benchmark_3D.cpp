@@ -190,24 +190,24 @@ int main(int argc, char** argv) {
     /* Do the actual stencil calculation */
     int ii=1, jj=1, kk=1;
     for (auto i=0; i < xsize; i++) {
-      if (ii > (EDGE_LENGTH-2)) ii=0;
+      if (ii > (EDGE_LENGTH-2)) ii=1;
       else ii++;
       
       for (auto j=0; j < ysize; j++) {
-        if (jj > (EDGE_LENGTH-2)) jj=0;
+        if (jj > (EDGE_LENGTH-2)) jj=1;
         else jj++;
 
         for (auto k=0; k < zsize; k++) {
-          if (kk > (EDGE_LENGTH-2)) kk=0;
+          if (kk > (EDGE_LENGTH-2)) kk=1;
           else kk++;
 
-          grid[1-index][i][j][k] = calcStencil( grid[index][ii-1][jj][kk],
-                                                grid[index][ii][jj-1][kk],
-                                                grid[index][ii][jj][kk-1],
-                                                grid[index][ii][jj][kk],
-                                                grid[index][ii+1][jj][kk],
-                                                grid[index][ii][jj+1][kk],
-                                                grid[index][ii][jj][kk+1] );
+          grid[1-index][ii][jj][kk] = calcStencil( grid[index][ii-1][jj][kk],
+                                                   grid[index][ii][jj-1][kk],
+                                                   grid[index][ii][jj][kk-1],
+                                                   grid[index][ii][jj][kk],
+                                                   grid[index][ii+1][jj][kk],
+                                                   grid[index][ii][jj+1][kk],
+                                                   grid[index][ii][jj][kk+1] );
         }
       }
     }
